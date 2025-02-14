@@ -1,0 +1,14 @@
+# .streamlit/config.toml
+
+[server]
+
+enableCORS = false
+enableXsrfProtection = true
+headless = true
+
+[runner]
+# Ensure Streamlit uses Conda for dependency management
+useConda = true
+
+[browser]
+gatherUsageStats = false
