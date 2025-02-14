@@ -6,3 +6,4 @@ joblib
 streamlit
 scikit-learn
 rdkit
+chardet

@@ -6,6 +6,7 @@ from rdkit.Chem import AllChem, Descriptors
 import tensorflow as tf
 from keras.layers import TFSMLayer
 import numpy as np
+import chardet  # For automatic encoding detection
 
 # Load models and preprocessing steps
 nn_model = TFSMLayer('multi_tasking_model_converted', call_endpoint='serving_default')
@@ -14,6 +15,14 @@ selected_features = joblib.load('selected_features.pkl')
 stacking_clf = joblib.load('random_forest_model.pkl')
 variance_threshold = joblib.load('variance_threshold.pkl')
 
+# Detect encoding of uploaded file
+def detect_encoding(file):
+    raw_data = file.read(4096)  # Read a small chunk
+    file.seek(0)  # Reset file position
+    result = chardet.detect(raw_data)  # Detect encoding
+    return result["encoding"]
+
+# Compute molecular descriptors
 def calculate_descriptors(smiles):
     mol = Chem.MolFromSmiles(smiles)
     if mol:
@@ -25,10 +34,12 @@ def calculate_descriptors(smiles):
         }
     return None
 
+# Convert SMILES to Morgan fingerprints
 def smiles_to_morgan(smiles, radius=2, n_bits=1024):
     mol = Chem.MolFromSmiles(smiles)
     return list(AllChem.GetMorganFingerprintAsBitVect(mol, radius, nBits=n_bits)) if mol else None
 
+# Prediction function for Neural Network
 def predict_with_nn(smiles):
     descriptors = calculate_descriptors(smiles)
     if descriptors:
@@ -45,6 +56,7 @@ def predict_with_nn(smiles):
         return pIC50, bioactivity
     return None, None
 
+# Prediction function for Stacking Classifier
 def predict_with_stacking(smiles):
     fingerprints = smiles_to_morgan(smiles)
     if fingerprints:
@@ -55,45 +67,35 @@ def predict_with_stacking(smiles):
         return class_mapping[prediction[0]]
     return None
 
+# Convert pIC50 values
 def convert_pIC50_to_uM(pIC50):
     return 10 ** (-pIC50) * 1e6
 
 def convert_pIC50_to_ng_per_uL(pIC50, mol_weight):
     return convert_pIC50_to_uM(pIC50) * mol_weight / 1000
 
+# Streamlit UI
 st.set_page_config(page_title="Bioactivity Prediction", page_icon="🧪", layout="wide")
-st.markdown("""
-    <style>
-    .stButton>button { border-radius: 8px; padding: 10px 20px; font-size: 16px; }
-    .stTextInput>div>div>input { border-radius: 8px; padding: 10px; }
-    .stFileUploader>div>button { border-radius: 8px; padding: 10px 20px; }
-    </style>
-    """, unsafe_allow_html=True)
 
 st.title("🧪 Bioactivity Prediction from SMILES")
 st.image("images/Drug.png", use_container_width=True)
 
 # Instructions
-st.write("""
-    ## Instructions:
-    - Upload a **CSV, TXT, or XLSX** file containing **SMILES** strings.
-    - Alternatively, **enter a single SMILES string** below.
-    - Click **Predict** to get bioactivity results.
-""")
+st.markdown("## Instructions:")
+st.markdown("1. Enter a SMILES string or upload a file (CSV, TXT, XLS, XLSX) with SMILES in a single column.")
+st.markdown("2. Choose the prediction model: Multi-Tasking Neural Network or Decision Tree.")
+st.markdown("3. Click 'Predict' to see results.")
 
-st.sidebar.markdown("""
-## About This App
-This app predicts bioactivity using:
-- **Multi-tasking Neural Network** (Predicts IC50 values)
-- **Decision Tree Classifier** (Predicts Bioactivity Class)
-""")
+# Sidebar info
+st.sidebar.markdown("## About")
+st.sidebar.write("This app predicts bioactivity class using two models:")
+st.sidebar.write("- **Multi-tasking Neural network** (Predicts IC50 values)")
+st.sidebar.write("- **Decision Tree** (Predicts bioactivity class)")
 
-# Model Selection
+# Input: Single SMILES string or file upload
 model_choice = st.radio("Choose a model:", ["Multi-Tasking Neural Network", "Decision Tree"], horizontal=True)
-
-# User Input
 smiles_input = st.text_input("Enter SMILES:")
-uploaded_file = st.file_uploader("Upload a CSV, TXT, or XLSX file with SMILES", type=["csv", "txt", "xlsx"])
+uploaded_file = st.file_uploader("Upload a file (CSV, TXT, XLS, XLSX)", type=["csv", "txt", "xls", "xlsx"])
 
 if st.button("Predict"):
     if smiles_input:
@@ -114,19 +116,19 @@ if st.button("Predict"):
                     st.success(f"Predicted Bioactivity Class: {bioactivity}")
                 else:
                     st.error("Invalid SMILES string.")
-
     elif uploaded_file:
         try:
+            detected_encoding = detect_encoding(uploaded_file)
             file_extension = uploaded_file.name.split(".")[-1].lower()
             
             if file_extension == "csv":
-                df = pd.read_csv(uploaded_file, encoding="utf-8")
+                df = pd.read_csv(uploaded_file, encoding=detected_encoding)
             elif file_extension == "txt":
-                df = pd.read_csv(uploaded_file, delimiter="\t", encoding="utf-8")
+                df = pd.read_csv(uploaded_file, delimiter="\t", encoding=detected_encoding)
             elif file_extension in ["xls", "xlsx"]:
                 df = pd.read_excel(uploaded_file, engine="openpyxl")
             else:
-                st.error("Unsupported file format. Please upload a CSV, TXT, or XLSX file.")
+                st.error("Unsupported file format. Please upload CSV, TXT, XLS, or XLSX.")
                 st.stop()
 
             if df.shape[1] != 1:
@@ -154,19 +156,11 @@ if st.button("Predict"):
             else:
                 results_df = pd.DataFrame(results, columns=["SMILES", "Bioactivity"])
 
-            st.subheader("Prediction Results")
             st.dataframe(results_df)
-
-            csv = results_df.to_csv(index=False).encode("utf-8")
-            st.download_button(
-                label="Download Predictions as CSV",
-                data=csv,
-                file_name="bioactivity_predictions.csv",
-                mime="text/csv",
-            )
+            csv = results_df.to_csv(index=False).encode('utf-8')
+            st.download_button("Download Predictions", csv, "bioactivity_predictions.csv", "text/csv")
             st.success("Predictions completed.")
 
         except Exception as e:
             st.error(f"Error processing the uploaded file: {e}")
-    else:
-        st.error("Enter a SMILES string or upload a file.")
+
