@@ -150,7 +150,7 @@ if st.button("Predict"):
                     st.success(f"Predicted IC50: {ic50_uM:.2f} µM")
                     st.success(f"Predicted IC50: {ic50_ng_per_uL:.2f} ng/µL")
                     st.success(f"Predicted Bioactivity: {bioactivity}")
-                elif model_choice == "Stacking Classifier":
+                elif model_choice == "decision tree":
                     bioactivity = predict_with_stacking(smiles_input)
                     st.success(f"Predicted Bioactivity Class: {bioactivity}")
             except Exception as e:
@@ -172,7 +172,7 @@ if st.button("Predict"):
                         mol_weight = calculate_descriptors(smiles)['MolWt']
                         ic50_ng_per_uL = convert_pIC50_to_ng_per_uL(pIC50, mol_weight)
                         predictions.append((smiles, pIC50, ic50_uM, ic50_ng_per_uL, bioactivity))
-                    elif model_choice == "Stacking Classifier":
+                    elif model_choice == "decision tree":
                         bioactivity = predict_with_stacking(smiles)
                         predictions.append((smiles, bioactivity))
                 except Exception as e:
@@ -207,6 +207,6 @@ st.sidebar.info(
     This app predicts the bioactivity class of a compound based on its SMILES notation.
     - **Models Available**:
       - Multi-Tasking Neural Network
-      - Stacking Classifier
+      - decision tree
     """
 )
