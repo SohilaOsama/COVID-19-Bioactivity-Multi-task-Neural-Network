@@ -74,6 +74,25 @@ def convert_pIC50_to_uM(pIC50):
 def convert_pIC50_to_ng_per_uL(pIC50, mol_weight):
     return convert_pIC50_to_uM(pIC50) * mol_weight / 1000
 
+
+
+# Detect Streamlit theme
+theme_color = st.get_option("theme.base")  # 'light' or 'dark'
+
+# Define styles for light and dark modes
+if theme_color == "dark":
+    bg_color = "#2E2E2E"  # Dark background
+    text_color = "#E0E0E0"  # Light text
+    border_color = "#76FF03"  # Neon green border
+    highlight_color = "#76FF03"  # Bright green
+    error_color = "#FF5252"  # Bright red
+else:
+    bg_color = "#e8f5e9"  # Light green background
+    text_color = "#333"  # Dark text
+    border_color = "#4CAF50"  # Green border
+    highlight_color = "#1b5e20"  # Dark green
+    error_color = "#d32f2f"  # Dark red
+
 # Streamlit UI
 st.set_page_config(page_title="Bioactivity Prediction", page_icon="🧪", layout="wide")
 
