@@ -8,6 +8,9 @@ from keras.layers import TFSMLayer
 import numpy as np
 import chardet  # For automatic encoding detection
 
+# Set page configuration
+st.set_page_config(page_title="Bioactivity Prediction", page_icon="🧪", layout="wide")
+
 # Load models and preprocessing steps
 nn_model = TFSMLayer('multi_tasking_model_converted', call_endpoint='serving_default')
 scaler = joblib.load('scaler.pkl')
@@ -114,17 +117,12 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Streamlit UI
-st.set_page_config(page_title="Bioactivity Prediction", page_icon="🧪", layout="wide")
-
 st.title("🧪 Bioactivity Prediction from SMILES")
 st.image("images/Drug.png", use_container_width=True)
 
 # Instructions
 st.markdown("## Instructions:")
- # Instruction Steps
 st.write("""
-    
     To convert your compound to a Simplified Molecular Input Line Entry System (SMILES), please visit this website: [decimer.ai](https://decimer.ai/)
     """)
 st.markdown("1. Enter a SMILES string or upload a TXT file with SMILES in a single column.")
