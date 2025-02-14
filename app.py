@@ -73,22 +73,27 @@ st.markdown("""
 st.title("🧪 Bioactivity Prediction from SMILES")
 st.image("images/Drug.png", use_container_width=True)
 
-# Instruction Steps
+# Instructions
 st.write("""
     ## Instructions:
-    1. To convert your compound to a Simplified Molecular Input Line Entry System (SMILES), please visit this website: [decimer.ai](https://decimer.ai/)
-    """)
-
-st.markdown("Enter a SMILES string or upload a file to predict the bioactivity class of compounds.")
-st.sidebar.markdown("""## About
-This app predicts bioactivity class using two models:
-- **Multi-tasking Neural network** (IC50 value)
-- **Decision Tree** (Bioactivity class)
+    - Upload a **CSV, TXT, or XLSX** file containing **SMILES** strings.
+    - Alternatively, **enter a single SMILES string** below.
+    - Click **Predict** to get bioactivity results.
 """)
 
+st.sidebar.markdown("""
+## About This App
+This app predicts bioactivity using:
+- **Multi-tasking Neural Network** (Predicts IC50 values)
+- **Decision Tree Classifier** (Predicts Bioactivity Class)
+""")
+
+# Model Selection
 model_choice = st.radio("Choose a model:", ["Multi-Tasking Neural Network", "Decision Tree"], horizontal=True)
+
+# User Input
 smiles_input = st.text_input("Enter SMILES:")
-uploaded_file = st.file_uploader("Upload a CSV file with SMILES", type=["csv"])
+uploaded_file = st.file_uploader("Upload a CSV, TXT, or XLSX file with SMILES", type=["csv", "txt", "xlsx"])
 
 if st.button("Predict"):
     if smiles_input:
@@ -109,9 +114,28 @@ if st.button("Predict"):
                     st.success(f"Predicted Bioactivity Class: {bioactivity}")
                 else:
                     st.error("Invalid SMILES string.")
+
     elif uploaded_file:
-        df = pd.read_csv(uploaded_file)
-        if "SMILES" in df.columns:
+        try:
+            file_extension = uploaded_file.name.split(".")[-1].lower()
+            
+            if file_extension == "csv":
+                df = pd.read_csv(uploaded_file, encoding="utf-8")
+            elif file_extension == "txt":
+                df = pd.read_csv(uploaded_file, delimiter="\t", encoding="utf-8")
+            elif file_extension in ["xls", "xlsx"]:
+                df = pd.read_excel(uploaded_file, engine="openpyxl")
+            else:
+                st.error("Unsupported file format. Please upload a CSV, TXT, or XLSX file.")
+                st.stop()
+
+            if df.shape[1] != 1:
+                st.error("The uploaded file must contain only one column with SMILES strings.")
+                st.stop()
+
+            df.columns = ["SMILES"]
+            df.dropna(inplace=True)
+
             results = []
             for smiles in df["SMILES"]:
                 if model_choice == "Multi-Tasking Neural Network":
@@ -124,15 +148,25 @@ if st.button("Predict"):
                 else:
                     bioactivity = predict_with_stacking(smiles)
                     results.append([smiles, bioactivity if bioactivity else "Error"])
+
             if model_choice == "Multi-Tasking Neural Network":
                 results_df = pd.DataFrame(results, columns=["SMILES", "pIC50", "IC50 (µM)", "IC50 (ng/µL)", "Bioactivity"])
             else:
                 results_df = pd.DataFrame(results, columns=["SMILES", "Bioactivity"])
+
+            st.subheader("Prediction Results")
             st.dataframe(results_df)
-            csv = results_df.to_csv(index=False).encode('utf-8')
-            st.download_button("Download Predictions", csv, "bioactivity_predictions.csv", "text/csv")
+
+            csv = results_df.to_csv(index=False).encode("utf-8")
+            st.download_button(
+                label="Download Predictions as CSV",
+                data=csv,
+                file_name="bioactivity_predictions.csv",
+                mime="text/csv",
+            )
             st.success("Predictions completed.")
-        else:
-            st.error("CSV must contain a column named 'SMILES'.")
+
+        except Exception as e:
+            st.error(f"Error processing the uploaded file: {e}")
     else:
         st.error("Enter a SMILES string or upload a file.")
