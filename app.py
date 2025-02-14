@@ -71,11 +71,12 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 st.title("🧪 Bioactivity Prediction from SMILES")
-st.image("images/Drug.png", use_column_width=True)
-st.write(""" 
-        **IC50** measures the effectiveness of a substance in inhibiting a specific biological or biochemical function. 
-        Predicting the IC50 value of compounds for COVID-19 can aid in understanding their therapeutic potential.
-        
+st.image("images/Drug.png", use_container_width=True)
+
+# Instruction Steps
+st.write("""
+    ## Instructions:
+    1. To convert your compound to a Simplified Molecular Input Line Entry System (SMILES), please visit this website: [decimer.ai](https://decimer.ai/)
     """)
 
 st.markdown("Enter a SMILES string or upload a file to predict the bioactivity class of compounds.")
