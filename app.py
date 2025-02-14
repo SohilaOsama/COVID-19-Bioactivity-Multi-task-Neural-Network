@@ -206,7 +206,7 @@ st.sidebar.info(
     """
     This app predicts the bioactivity class of a compound based on its SMILES notation.
     - **Models Available**:
-      - Multi-Tasking Neural Network
-      - decision tree
+      - Multi-Tasking Neural Network(IC50 Values)
+      - decision tree (Bioactivity Class)
     """
 )
