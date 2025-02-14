@@ -116,18 +116,18 @@ if st.button("Predict"):
                     st.markdown(
     f"""
     <div style="
-        border: 2px solid {border_color}; 
+        border: 2px solid #4CAF50; 
         padding: 15px; 
         border-radius: 10px; 
-        background-color: {bg_color}; 
-        color: {text_color};
+        background-color: #e8f5e9; 
+        color: #333;
         font-family: Arial, sans-serif;">
-        <h4 style="color: {highlight_color}; text-align: center;">🧪 Prediction Results</h4>
-        <p><b>📊 pIC50 Value:</b> <span style="color: {highlight_color};">{pIC50:.2f}</span></p>
-        <p><b>⚗️ IC50 (µM):</b> <span style="color: {highlight_color};">{convert_pIC50_to_uM(pIC50):.2f} µM</span></p>
-        <p><b>🧬 IC50 (ng/µL):</b> <span style="color: {highlight_color};">{convert_pIC50_to_ng_per_uL(pIC50, mol_weight):.2f} ng/µL</span></p>
-        <p><b>🔬 Bioactivity:</b> 
-            <span style="color: {'#1565C0' if bioactivity=='active' else 'error_color'};">
+        <h4 style="color: #2E7D32; text-align: center;">🧪 Prediction Results</h4>
+        <p><b>📊 pIC50 Value:</b> <span style="color: #1b5e20;">{pIC50:.2f}</span></p>
+        <p><b>⚗️ IC50 (µM):</b> <span style="color: #1b5e20;">{convert_pIC50_to_uM(pIC50):.2f} µM</span></p>
+        <p><b>🧬 IC50 (ng/µL):</b> <span style="color: #1b5e20;">{convert_pIC50_to_ng_per_uL(pIC50, mol_weight):.2f} ng/µL</span></p>
+        <p><b>🟢 Bioactivity:</b> 
+            <span style="color: {'#1b5e20' if bioactivity=='active' else '#d32f2f'};">
                 {bioactivity.capitalize()}
             </span>
         </p>
