@@ -72,6 +72,12 @@ st.markdown("""
 
 st.title("🧪 Bioactivity Prediction from SMILES")
 st.image("images/Drug.png", use_column_width=True)
+st.write(""" 
+        **IC50** measures the effectiveness of a substance in inhibiting a specific biological or biochemical function. 
+        Predicting the IC50 value of compounds for COVID-19 can aid in understanding their therapeutic potential.
+        
+    """)
+
 st.markdown("Enter a SMILES string or upload a file to predict the bioactivity class of compounds.")
 st.sidebar.markdown("""## About
 This app predicts bioactivity class using two models:
