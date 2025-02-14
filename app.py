@@ -74,6 +74,46 @@ def convert_pIC50_to_uM(pIC50):
 def convert_pIC50_to_ng_per_uL(pIC50, mol_weight):
     return convert_pIC50_to_uM(pIC50) * mol_weight / 1000
 
+# Custom CSS for better UI
+st.markdown("""
+    <style>
+        .main {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .sidebar .sidebar-content {
+            background-color: #333;
+            color: #fff;
+        }
+        .stButton button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+        .stButton button:hover {
+            background-color: #45a049;
+        }
+        .stTextInput input {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            background-color: #f8f8f8;
+            font-size: 16px;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 # Streamlit UI
 st.set_page_config(page_title="Bioactivity Prediction", page_icon="🧪", layout="wide")
 
@@ -168,4 +208,3 @@ if st.button("Predict"):
 
         except Exception as e:
             st.error(f"Error processing the uploaded file: {e}")
-
