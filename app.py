@@ -109,10 +109,19 @@ if st.button("Predict"):
                 pIC50, bioactivity = predict_with_nn(smiles_input)
                 if pIC50 is not None:
                     mol_weight = calculate_descriptors(smiles_input)['MolWt']
-                    st.success(f"Predicted pIC50: {pIC50:.2f}")
-                    st.success(f"Predicted IC50: {convert_pIC50_to_uM(pIC50):.2f} µM")
-                    st.success(f"Predicted IC50: {convert_pIC50_to_ng_per_uL(pIC50, mol_weight):.2f} ng/µL")
-                    st.success(f"Predicted Bioactivity: {bioactivity}")
+                    st.markdown(
+    f"""
+    <div style="border: 2px solid #4CAF50; padding: 15px; border-radius: 10px; background-color: #f4f4f4;">
+        <h4 style="color: #4CAF50; text-align: center;">🧪 Prediction Results</h4>
+        <p><b>📊 pIC50 Value:</b> {pIC50:.2f}</p>
+        <p><b>⚗️ IC50 (µM):</b> {convert_pIC50_to_uM(pIC50):.2f} µM</p>
+        <p><b>🧬 IC50 (ng/µL):</b> {convert_pIC50_to_ng_per_uL(pIC50, mol_weight):.2f} ng/µL</p>
+        <p><b>🟢 Bioactivity:</b> <span style="color: {'green' if bioactivity=='active' else 'red'};">{bioactivity.capitalize()}</span></p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
                 else:
                     st.error("Invalid SMILES string.")
             else:
