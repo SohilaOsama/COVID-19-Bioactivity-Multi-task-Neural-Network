@@ -126,7 +126,7 @@ st.set_page_config(
 )
 
 st.title("Bioactivity Prediction from SMILES")
-st.image("https://github.com/SohilaOsama/COVID-19-Bioactivity-Multi-task-Neural-Network/blob/688f014639a49039043f9efe7b4f945af0213520/images/bioactivity_image.png", use_container_width=True)
+st.image("images/Drug.png", use_container_width=True)
 st.write("Welcome to the Bioactivity Prediction App! Enter a SMILES string or upload a file to predict the bioactivity class of compounds.")
 
 # Instruction Steps
