@@ -82,7 +82,12 @@ st.image("images/Drug.png", use_container_width=True)
 
 # Instructions
 st.markdown("## Instructions:")
-st.markdown("1. Enter a SMILES string or upload a file (CSV, TXT, XLS, XLSX) with SMILES in a single column.")
+ # Instruction Steps
+st.write("""
+    
+    To convert your compound to a Simplified Molecular Input Line Entry System (SMILES), please visit this website: [decimer.ai](https://decimer.ai/)
+    """)
+st.markdown("1. Enter a SMILES string or upload a TXT file with SMILES in a single column.")
 st.markdown("2. Choose the prediction model: Multi-Tasking Neural Network or Decision Tree.")
 st.markdown("3. Click 'Predict' to see results.")
 
@@ -95,7 +100,7 @@ st.sidebar.write("- **Decision Tree** (Predicts bioactivity class)")
 # Input: Single SMILES string or file upload
 model_choice = st.radio("Choose a model:", ["Multi-Tasking Neural Network", "Decision Tree"], horizontal=True)
 smiles_input = st.text_input("Enter SMILES:")
-uploaded_file = st.file_uploader("Upload a file (CSV, TXT, XLS, XLSX)", type=["csv", "txt", "xls", "xlsx"])
+uploaded_file = st.file_uploader("Upload a TXT file", type=["csv", "txt", "xls", "xlsx"])
 
 if st.button("Predict"):
     if smiles_input:
