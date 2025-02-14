@@ -116,6 +116,7 @@ def convert_pIC50_to_ng_per_uL(pIC50, mol_weight):
     ic50_ng_per_uL = ic50_uM * mol_weight / 1000
     return ic50_ng_per_uL
 
+
 # Streamlit UI
 st.set_page_config(
     page_title="Bioactivity Prediction",
@@ -127,6 +128,12 @@ st.set_page_config(
 st.title("Bioactivity Prediction from SMILES")
 st.image("https://github.com/SohilaOsama/COVID-19-Bioactivity-Multi-task-Neural-Network/blob/688f014639a49039043f9efe7b4f945af0213520/images/bioactivity_image.png", use_container_width=True)
 st.write("Welcome to the Bioactivity Prediction App! Enter a SMILES string or upload a file to predict the bioactivity class of compounds.")
+
+# Instruction Steps
+st.write("""
+    ## Instructions:
+    1. To convert your compound to a Simplified Molecular Input Line Entry System (SMILES), please visit this website: [decimer.ai](https://decimer.ai/)
+    """)
 
 # Model selection
 model_choice = st.radio("Choose a prediction model:", ["Multi-Tasking Neural Network", "Decision Tree"])
