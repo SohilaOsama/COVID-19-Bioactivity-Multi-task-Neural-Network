@@ -82,7 +82,7 @@ st.write("""
 st.markdown("Enter a SMILES string or upload a file to predict the bioactivity class of compounds.")
 st.sidebar.markdown("""## About
 This app predicts bioactivity class using two models:
-- **Multi-tasking Neural network (IC50 value)
+- **Multi-tasking Neural network** (IC50 value)
 - **Decision Tree** (Bioactivity class)
 """)
 
