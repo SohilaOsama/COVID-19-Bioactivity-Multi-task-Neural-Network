@@ -51,9 +51,17 @@ def predict_with_nn(smiles):
         combined_selected = pd.DataFrame(combined_scaled, columns=combined_df.columns)[selected_features]
         input_data = combined_selected.to_numpy()
         outputs = nn_model(input_data)
+        
+        # Debug: Check model output
+        st.write(outputs)
+        
         pIC50 = outputs['output_0'].numpy()[0][0]
         bioactivity_confidence = outputs['output_1'].numpy()[0][0]
         bioactivity = 'active' if bioactivity_confidence > 0.5 else 'inactive'
+        
+        # Debug: Check confidence value
+        st.write(f"Bioactivity Confidence: {bioactivity_confidence}")
+        
         return pIC50, bioactivity, bioactivity_confidence
     return None, None, None
 
@@ -65,6 +73,10 @@ def predict_with_stacking(smiles):
         X_filtered = variance_threshold.transform(fingerprints_df)
         prediction = stacking_clf.predict(X_filtered)
         prediction_proba = stacking_clf.predict_proba(X_filtered)
+        
+        # Debug: Check prediction probabilities
+        st.write(prediction_proba)
+        
         confidence = max(prediction_proba[0])
         class_mapping = {0: 'inactive', 1: 'intermediate', 2: 'active'}
         return class_mapping[prediction[0]], confidence
