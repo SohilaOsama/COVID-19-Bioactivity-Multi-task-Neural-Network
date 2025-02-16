@@ -52,9 +52,10 @@ def predict_with_nn(smiles):
         input_data = combined_selected.to_numpy()
         outputs = nn_model(input_data)
         pIC50 = outputs['output_0'].numpy()[0][0]
-        bioactivity = 'active' if outputs['output_1'].numpy()[0][0] > 0.5 else 'inactive'
-        return pIC50, bioactivity
-    return None, None
+        bioactivity_confidence = outputs['output_1'].numpy()[0][0]
+        bioactivity = 'active' if bioactivity_confidence > 0.5 else 'inactive'
+        return pIC50, bioactivity, bioactivity_confidence
+    return None, None, None
 
 # Prediction function for Stacking Classifier
 def predict_with_stacking(smiles):
@@ -63,9 +64,11 @@ def predict_with_stacking(smiles):
         fingerprints_df = pd.DataFrame([fingerprints])
         X_filtered = variance_threshold.transform(fingerprints_df)
         prediction = stacking_clf.predict(X_filtered)
+        prediction_proba = stacking_clf.predict_proba(X_filtered)
+        confidence = max(prediction_proba[0])
         class_mapping = {0: 'inactive', 1: 'intermediate', 2: 'active'}
-        return class_mapping[prediction[0]]
-    return None
+        return class_mapping[prediction[0]], confidence
+    return None, None
 
 # Convert pIC50 values
 def convert_pIC50_to_uM(pIC50):
@@ -73,10 +76,6 @@ def convert_pIC50_to_uM(pIC50):
 
 def convert_pIC50_to_ng_per_uL(pIC50, mol_weight):
     return convert_pIC50_to_uM(pIC50) * mol_weight / 1000
-
-
-
-
 
 # Streamlit UI
 st.set_page_config(page_title="Bioactivity Prediction", page_icon="🧪", layout="wide")
@@ -110,7 +109,7 @@ if st.button("Predict"):
     if smiles_input:
         with st.spinner("Predicting..."):
             if model_choice == "Multi-Tasking Neural Network":
-                pIC50, bioactivity = predict_with_nn(smiles_input)
+                pIC50, bioactivity, bioactivity_confidence = predict_with_nn(smiles_input)
                 if pIC50 is not None:
                     mol_weight = calculate_descriptors(smiles_input)['MolWt']
                     st.markdown(
@@ -131,6 +130,7 @@ if st.button("Predict"):
                 {bioactivity.capitalize()}
             </span>
         </p>
+        <p><b>🔍 Confidence:</b> <span style="color: #1b5e20;">{bioactivity_confidence:.2f}</span></p>
     </div>
     """,
     unsafe_allow_html=True
@@ -140,9 +140,9 @@ if st.button("Predict"):
                 else:
                     st.error("Invalid SMILES string.")
             else:
-                bioactivity = predict_with_stacking(smiles_input)
+                bioactivity, confidence = predict_with_stacking(smiles_input)
                 if bioactivity:
-                    st.success(f"Predicted Bioactivity Class: {bioactivity}")
+                    st.success(f"Predicted Bioactivity Class: {bioactivity} with confidence {confidence:.2f}")
                 else:
                     st.error("Invalid SMILES string.")
     elif uploaded_file:
@@ -170,20 +170,20 @@ if st.button("Predict"):
             results = []
             for smiles in df["SMILES"]:
                 if model_choice == "Multi-Tasking Neural Network":
-                    pIC50, bioactivity = predict_with_nn(smiles)
+                    pIC50, bioactivity, bioactivity_confidence = predict_with_nn(smiles)
                     if pIC50 is not None:
                         mol_weight = calculate_descriptors(smiles)['MolWt']
-                        results.append([smiles, pIC50, convert_pIC50_to_uM(pIC50), convert_pIC50_to_ng_per_uL(pIC50, mol_weight), bioactivity])
+                        results.append([smiles, pIC50, convert_pIC50_to_uM(pIC50), convert_pIC50_to_ng_per_uL(pIC50, mol_weight), bioactivity, bioactivity_confidence])
                     else:
-                        results.append([smiles, "Error", "Error", "Error", "Error"])
+                        results.append([smiles, "Error", "Error", "Error", "Error", "Error"])
                 else:
-                    bioactivity = predict_with_stacking(smiles)
-                    results.append([smiles, bioactivity if bioactivity else "Error"])
+                    bioactivity, confidence = predict_with_stacking(smiles)
+                    results.append([smiles, bioactivity if bioactivity else "Error", confidence if confidence else "Error"])
 
             if model_choice == "Multi-Tasking Neural Network":
-                results_df = pd.DataFrame(results, columns=["SMILES", "pIC50", "IC50 (µM)", "IC50 (ng/µL)", "Bioactivity"])
+                results_df = pd.DataFrame(results, columns=["SMILES", "pIC50", "IC50 (µM)", "IC50 (ng/µL)", "Bioactivity", "Confidence"])
             else:
-                results_df = pd.DataFrame(results, columns=["SMILES", "Bioactivity"])
+                results_df = pd.DataFrame(results, columns=["SMILES", "Bioactivity", "Confidence"])
 
             st.dataframe(results_df)
             csv = results_df.to_csv(index=False).encode('utf-8')
@@ -192,4 +192,3 @@ if st.button("Predict"):
 
         except Exception as e:
             st.error(f"Error processing the uploaded file: {e}")
-
