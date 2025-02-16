@@ -51,17 +51,11 @@ def predict_with_nn(smiles):
         combined_selected = pd.DataFrame(combined_scaled, columns=combined_df.columns)[selected_features]
         input_data = combined_selected.to_numpy()
         outputs = nn_model(input_data)
-        
-        # Debug: Check model output
-        st.write(outputs)
-        
+
         pIC50 = outputs['output_0'].numpy()[0][0]
         bioactivity_confidence = outputs['output_1'].numpy()[0][0]
         bioactivity = 'active' if bioactivity_confidence > 0.5 else 'inactive'
-        
-        # Debug: Check confidence value
-        st.write(f"Bioactivity Confidence: {bioactivity_confidence}")
-        
+
         return pIC50, bioactivity, bioactivity_confidence
     return None, None, None
 
@@ -73,10 +67,6 @@ def predict_with_stacking(smiles):
         X_filtered = variance_threshold.transform(fingerprints_df)
         prediction = stacking_clf.predict(X_filtered)
         prediction_proba = stacking_clf.predict_proba(X_filtered)
-        
-        # Debug: Check prediction probabilities
-        st.write(prediction_proba)
-        
         confidence = max(prediction_proba[0])
         class_mapping = {0: 'inactive', 1: 'intermediate', 2: 'active'}
         return class_mapping[prediction[0]], confidence
@@ -88,6 +78,45 @@ def convert_pIC50_to_uM(pIC50):
 
 def convert_pIC50_to_ng_per_uL(pIC50, mol_weight):
     return convert_pIC50_to_uM(pIC50) * mol_weight / 1000
+
+# ReadMe content
+readme_content = """
+# Bioactivity Prediction from SMILES
+
+This app predicts bioactivity class using two models:
+- **Multi-tasking Neural Network** (Predicts IC50 values)
+- **Decision Tree** (Predicts bioactivity class)
+
+## Instructions:
+
+1. Enter a SMILES string or upload a TXT file with SMILES in a single column.
+2. Choose the prediction model: Multi-Tasking Neural Network or Decision Tree.
+3. Click 'Predict' to see results.
+
+## Using the App:
+
+1. **Enter SMILES**: Input the SMILES string of the compound you want to predict.
+2. **Upload File**: Alternatively, you can upload a TXT file with SMILES strings in a single column.
+3. **Choose Model**: Select between the Multi-Tasking Neural Network and the Decision Tree for prediction.
+4. **Predict**: Click the 'Predict' button to get the bioactivity prediction.
+
+## Output:
+
+For the Multi-Tasking Neural Network:
+- **pIC50 Value**: The predicted pIC50 value.
+- **IC50 (µM)**: The IC50 value in micromolar.
+- **IC50 (ng/µL)**: The IC50 value in nanograms per microliter.
+- **Bioactivity**: The bioactivity classification (active or inactive).
+- **Confidence**: The confidence level of the bioactivity prediction.
+
+For the Decision Tree:
+- **Bioactivity**: The bioactivity classification (inactive, intermediate, or active).
+- **Confidence**: The confidence level of the bioactivity prediction.
+
+## Notes:
+
+- To convert your compound to a Simplified Molecular Input Line Entry System (SMILES), please visit this website: [decimer.ai](https://decimer.ai/)
+"""
 
 # Streamlit UI
 st.set_page_config(page_title="Bioactivity Prediction", page_icon="🧪", layout="wide")
@@ -111,6 +140,15 @@ st.sidebar.markdown("## About")
 st.sidebar.write("This app predicts bioactivity class using two models:")
 st.sidebar.write("- **Multi-tasking Neural network** (Predicts IC50 values)")
 st.sidebar.write("- **Decision Tree** (Predicts bioactivity class)")
+
+# Adding ReadMe file download link
+st.sidebar.markdown("## ReadMe")
+st.sidebar.download_button(
+    label="Download ReadMe",
+    data=readme_content,
+    file_name="README.txt",
+    mime="text/plain"
+)
 
 # Input: Single SMILES string or file upload
 model_choice = st.radio("Choose a model:", ["Multi-Tasking Neural Network", "Decision Tree"], horizontal=True)
