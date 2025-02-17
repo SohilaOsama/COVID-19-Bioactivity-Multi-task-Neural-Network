@@ -131,7 +131,7 @@ with open("script.js") as f:
 # Navigation
 st.sidebar.markdown("## Navigation")
 nav_home = st.sidebar.button("Home")
-# nav_about = st.sidebar.button("About")
+#nav_about = st.sidebar.button("About")
 nav_mission = st.sidebar.button("Mission")
 nav_readme = st.sidebar.button("README")
 
@@ -148,22 +148,18 @@ else:
         st.session_state.page = "Home"
 
 if st.session_state.page == "Home":
-    st.markdown("""
-    <div class="home-container">
-        <h1>🧪 Bioactivity Prediction from SMILES</h1>
-        <img src="images/Drug.png" class="responsive-img">
+    st.title("🧪 Bioactivity Prediction from SMILES")
+    st.image("images/Drug.png", use_container_width=True)
 
-        <div class="instructions">
-            <h2>Instructions:</h2>
-            <p>To convert your compound to a Simplified Molecular Input Line Entry System (SMILES), please visit this website: <a href="https://decimer.ai/" target="_blank">decimer.ai</a></p>
-            <ol>
-                <li>Enter a SMILES string or upload a TXT file with SMILES in a single column.</li>
-                <li>Choose the prediction model: Multi-Tasking Neural Network or Decision Tree.</li>
-                <li>Click 'Predict' to see results.</li>
-            </ol>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    # Instructions
+    st.markdown("## Instructions:")
+    # Instruction Steps
+    st.write("""
+        To convert your compound to a Simplified Molecular Input Line Entry System (SMILES), please visit this website: [decimer.ai](https://decimer.ai/)
+        """)
+    st.markdown("1. Enter a SMILES string or upload a TXT file with SMILES in a single column.")
+    st.markdown("2. Choose the prediction model: Multi-Tasking Neural Network or Decision Tree.")
+    st.markdown("3. Click 'Predict' to see results.")
 
     # Input: Single SMILES string or file upload
     model_choice = st.radio("Choose a model:", ["Multi-Tasking Neural Network", "Decision Tree"], horizontal=True)
