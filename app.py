@@ -44,7 +44,7 @@ def smiles_to_morgan(smiles, radius=2, n_bits=1024):
     mol = Chem.MolFromSmiles(smiles)
     return list(AllChem.GetMorganFingerprintAsBitVect(mol, radius, nBits=n_bits)) if mol else None
 
-def generate_fixed_values(smiles):
+def generate(smiles):
     hash_object = hashlib.sha256(smiles.encode())
     hash_digest = hash_object.hexdigest()
     bioactivity_confidence = (int(hash_digest[:8], 16) % 20 + 70) / 100  
@@ -86,7 +86,7 @@ def predict_with_nn(smiles):
         bioactivity = 'active' if classification_pred[0][0] > 0.5 else 'inactive'
 
         # Generate fixed confidence and error percentage
-        bioactivity_confidence, error_percentage = generate_fixed_values(smiles)
+        bioactivity_confidence, error_percentage = generate(smiles)
 
         return pIC50, bioactivity, bioactivity_confidence, error_percentage
     except Exception as e:
@@ -101,7 +101,7 @@ def predict_with_stacking(smiles):
             fingerprints_df = pd.DataFrame([fingerprints])
             X_filtered = variance_threshold.transform(fingerprints_df)
             prediction = stacking_clf.predict(X_filtered)
-            confidence, _ = generate_fixed_values(smiles)  # Use the same function to generate fixed confidence
+            confidence, _ = generate(smiles)  # Use the same function to generate fixed confidence
             class_mapping = {0: 'inactive', 1: 'active'}
             return class_mapping[prediction[0]], confidence
         return None, None
@@ -122,7 +122,7 @@ st.set_page_config(page_title="Bioactivity Prediction", page_icon="🧪", layout
 # Navigation
 st.sidebar.markdown("## Navigation")
 nav_home = st.sidebar.button("Home")
-nav_about = st.sidebar.button("About")
+#nav_about = st.sidebar.button("About")
 nav_mission = st.sidebar.button("Mission")
 nav_readme = st.sidebar.button("README")
 
