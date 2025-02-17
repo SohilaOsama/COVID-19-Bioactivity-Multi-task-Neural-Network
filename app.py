@@ -63,7 +63,6 @@ def predict_with_nn(smiles):
         return pIC50, bioactivity, bioactivity_confidence, error_percentage  # Ensure this is returned
     return None, None, None, None
 
-
 # Prediction function for Stacking Classifier
 def predict_with_stacking(smiles):
     fingerprints = smiles_to_morgan(smiles)
@@ -87,9 +86,25 @@ def convert_pIC50_to_ng_per_uL(pIC50, mol_weight):
 st.set_page_config(page_title="Bioactivity Prediction", page_icon="🧪", layout="wide")
 
 # Navigation
-page = st.sidebar.selectbox("Navigation", ["Home", "About", "README"])
+st.sidebar.markdown("## Navigation")
+nav_home = st.sidebar.button("Home")
+nav_about = st.sidebar.button("About")
+nav_mission = st.sidebar.button("Mission")
+nav_readme = st.sidebar.button("README")
 
-if page == "Home":
+if nav_home:
+    st.session_state.page = "Home"
+elif nav_about:
+    st.session_state.page = "About"
+elif nav_mission:
+    st.session_state.page = "Mission"
+elif nav_readme:
+    st.session_state.page = "README"
+else:
+    if 'page' not in st.session_state:
+        st.session_state.page = "Home"
+
+if st.session_state.page == "Home":
     st.title("🧪 Bioactivity Prediction from SMILES")
     st.image("images/Drug.png", use_container_width=True)
 
@@ -197,11 +212,11 @@ if page == "Home":
             except Exception as e:
                 st.error(f"Error processing the uploaded file: {e}")
 
-elif page == "About":
+elif st.session_state.page == "About":
     show_about()
-    mission_page = st.sidebar.button("Our Mission")
-    if mission_page:
-        show_mission()
 
-elif page == "README":
+elif st.session_state.page == "Mission":
+    show_mission()
+
+elif st.session_state.page == "README":
     show_readme()
