@@ -259,8 +259,8 @@ if st.session_state.page == "Home":
             except Exception as e:
                 st.error(f"Error processing the uploaded file: {e}")
 
-elif st.session_state.page == "About":
-    show_about()
+# elif st.session_state.page == "About":
+#     show_about()
 
 elif st.session_state.page == "Mission":
     show_mission()
