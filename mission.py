@@ -9,7 +9,7 @@ def show_mission():
 
     ### 🎯 **Our Goals**
     - **Predict IC50 & pIC50 Values**: Estimating the concentration needed to inhibit a biological target.
-    - **Bioactivity Classification**: Determining whether a compound is **active, intermediate, or inactive**.
+    - **Bioactivity Classification**: Determining whether a compound is **active or inactive**.
     - **Machine Learning Integration**: Leveraging **Neural Networks & Decision Trees** for accurate predictions.
 
     ### 🧑‍🔬 **Our Research Approach**
@@ -23,5 +23,5 @@ def show_mission():
     - **Improving Model Accuracy**: Enhancing predictions with GAN-generated molecules.
     - **Real-World Applications**: Collaborating with pharmaceutical companies.
 
-    🔗 **Learn More:** [SRTA City Official Website](https://srtacity.org)
+    🔗 **Learn More:** [SRTA City Official Website](http://srtacity.sci.eg/ar/)
     """)

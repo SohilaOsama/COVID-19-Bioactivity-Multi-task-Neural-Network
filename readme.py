@@ -16,7 +16,7 @@ def show_readme():
 
     ### 📏 **SMILES String Requirements**
     - **Minimum Length:** 5 characters
-    - **Maximum Length:** 200 characters
+    - **Maximum Length:** 500 characters
     - **Valid Examples:**
       - ✅ CCC(=O)OCC  
       - ✅ C1=CC=CC=C1  
