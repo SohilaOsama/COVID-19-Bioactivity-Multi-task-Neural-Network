@@ -77,7 +77,7 @@ def predict_with_nn(smiles):
         pIC50 = regression_pred[0][0]
         bioactivity = 'active' if classification_pred[0][0] > 0.5 else 'inactive'
 
-       
+        # Randomly generate confidence and error percentage
         bioactivity_confidence = random.uniform(0.7, 0.9)
         error_percentage = random.uniform(0.01, 0.05)
 
@@ -85,7 +85,6 @@ def predict_with_nn(smiles):
     except Exception as e:
         st.error(f"Error in prediction: {e}")
         return None, None, None, None
-
 # Prediction function for Stacking Classifier
 def predict_with_stacking(smiles):
     fingerprints = smiles_to_morgan(smiles)
@@ -93,8 +92,8 @@ def predict_with_stacking(smiles):
         fingerprints_df = pd.DataFrame([fingerprints])
         X_filtered = variance_threshold.transform(fingerprints_df)
         prediction = stacking_clf.predict(X_filtered)
-        confidence = random.uniform(0.7, 0.9)  
-        class_mapping = {0: 'inactive', 1: 'active'}
+        confidence = random.uniform(0.7, 0.9)  # Random confidence in the good range
+        class_mapping = {0: 'inactive', 1:'active'}
         return class_mapping[prediction[0]], confidence
     return None, None
 
