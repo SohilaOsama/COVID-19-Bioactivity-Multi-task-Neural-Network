@@ -1,0 +1,52 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.sidebar .sidebar-content {
+    background-color: #007BFF;
+    color: white;
+}
+
+.sidebar .sidebar-content button {
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.sidebar .sidebar-content button:hover {
+    background-color: #003f7f;
+}
+
+.main .main-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.result-container {
+    border: 2px solid #007BFF;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: #E3F2FD;
+    color: #333;
+}
+
+.result-container h4 {
+    color: #0D47A1;
+    text-align: center;
+}
+
+.result-value {
+    color: #1E88E5;
+}
+
+.result-container span[style*="color: #D32F2F;"] {
+    color: #D32F2F !important;
+}
