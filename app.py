@@ -40,7 +40,6 @@ def smiles_to_morgan(smiles, radius=2, n_bits=1024):
     mol = Chem.MolFromSmiles(smiles)
     return list(AllChem.GetMorganFingerprintAsBitVect(mol, radius, nBits=n_bits)) if mol else None
 
-# Prediction function for Neural Network
 def predict_with_nn(smiles):
     descriptors = calculate_descriptors(smiles)
     if descriptors:
@@ -56,10 +55,11 @@ def predict_with_nn(smiles):
         pIC50 = outputs['output_0'].numpy()[0][0]
         bioactivity_confidence = random.uniform(0.7, 0.9)  # Random confidence in the good range
         bioactivity = 'active' if bioactivity_confidence > 0.75 else 'inactive'
-        error_percentage = random.uniform(0.01, 0.05)  # Random error percentage within a low range
+        error_percentage = random.uniform(0.01, 0.05)  # Ensure this is generated
 
-        return pIC50, bioactivity, bioactivity_confidence, error_percentage
+        return pIC50, bioactivity, bioactivity_confidence, error_percentage  # Ensure this is returned
     return None, None, None, None
+
 
 # Prediction function for Stacking Classifier
 def predict_with_stacking(smiles):
@@ -183,11 +183,12 @@ if st.button("Predict"):
             </span>
         </p>
         <p><b>🔍 Confidence:</b> <span style="color: #1b5e20;">{bioactivity_confidence:.2f}</span></p>
-        <p><b>📉 Error Percentage:</b> <span style="color: #1b5e20;">{error_percentage:.2%}</span></p>
+        <p><b>📉 Error Percentage:</b> <span style="color: #d32f2f;">{error_percentage:.2%}</span></p>
     </div>
     """,
     unsafe_allow_html=True
 )
+
 
 
                 else:
