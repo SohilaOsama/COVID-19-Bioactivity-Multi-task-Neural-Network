@@ -1,52 +1,92 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #e0f7fa, #ffffff);
     color: #333;
+    margin: 0;
+    padding: 0;
 }
 
 .sidebar .sidebar-content {
-    background-color: #007BFF;
+    background-color: #004d40;
     color: white;
+    padding: 20px;
+    height: 100vh;
 }
 
 .sidebar .sidebar-content button {
-    background-color: #0056b3;
+    background-color: #00796b;
     color: white;
     border: none;
-    padding: 10px;
-    margin: 5px;
-    border-radius: 5px;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
     cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s, transform 0.3s;
 }
 
 .sidebar .sidebar-content button:hover {
-    background-color: #003f7f;
+    background-color: #004d40;
+    transform: scale(1.05);
 }
 
 .main .main-content {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #f1f8e9;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 77, 64, 0.2);
+    margin: 20px;
 }
 
 .result-container {
-    border: 2px solid #007BFF;
-    padding: 15px;
-    border-radius: 10px;
-    background-color: #E3F2FD;
-    color: #333;
+    border: 3px solid #004d40;
+    padding: 20px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #a7ffeb, #ffffff);
+    color: #004d40;
+    box-shadow: 0 4px 15px rgba(0, 77, 64, 0.2);
 }
 
 .result-container h4 {
-    color: #0D47A1;
+    color: #004d40;
     text-align: center;
+    font-size: 24px;
+    margin-bottom: 15px;
 }
 
 .result-value {
-    color: #1E88E5;
+    color: #00695c;
+    font-weight: 500;
 }
 
 .result-container span[style*="color: #D32F2F;"] {
-    color: #D32F2F !important;
+    color: #d32f2f !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.button-primary {
+    background-color: #004d40;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.button-primary:hover {
+    background-color: #00796b;
+    box-shadow: 0 4px 15px rgba(0, 77, 64, 0.3);
+}
+
+footer {
+    text-align: center;
+    padding: 15px;
+    background-color: #004d40;
+    color: white;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
 }
