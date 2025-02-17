@@ -83,46 +83,6 @@ def convert_pIC50_to_uM(pIC50):
 def convert_pIC50_to_ng_per_uL(pIC50, mol_weight):
     return convert_pIC50_to_uM(pIC50) * mol_weight / 1000
 
-# ReadMe content
-readme_content = """
-# Bioactivity Prediction from SMILES
-
-This app predicts bioactivity class using two models:
-- **Multi-tasking Neural Network** (Predicts IC50 values)
-- **Decision Tree** (Predicts bioactivity class)
-
-## Instructions:
-
-1. Enter a SMILES string or upload a TXT file with SMILES in a single column.
-2. Choose the prediction model: Multi-Tasking Neural Network or Decision Tree.
-3. Click 'Predict' to see results.
-
-## Using the App:
-
-1. **Enter SMILES**: Input the SMILES string of the compound you want to predict.
-2. **Upload File**: Alternatively, you can upload a TXT file with SMILES strings in a single column.
-3. **Choose Model**: Select between the Multi-Tasking Neural Network and the Decision Tree for prediction.
-4. **Predict**: Click the 'Predict' button to get the bioactivity prediction.
-
-## Output:
-
-For the Multi-Tasking Neural Network:
-- **pIC50 Value**: The predicted pIC50 value.
-- **IC50 (µM)**: The IC50 value in micromolar.
-- **IC50 (ng/µL)**: The IC50 value in nanograms per microliter.
-- **Bioactivity**: The bioactivity classification (active or inactive).
-- **Confidence**: The confidence level of the bioactivity prediction.
-- **Error Percentage**: The error percentage of the pIC50 value prediction.
-
-For the Decision Tree:
-- **Bioactivity**: The bioactivity classification (inactive, intermediate, or active).
-- **Confidence**: The confidence level of the bioactivity prediction.
-
-## Notes:
-
-- To convert your compound to a Simplified Molecular Input Line Entry System (SMILES), please visit this website: [decimer.ai](https://decimer.ai/)
-"""
-
 # Streamlit UI
 st.set_page_config(page_title="Bioactivity Prediction", page_icon="🧪", layout="wide")
 
@@ -131,9 +91,8 @@ st.image("images/Drug.png", use_container_width=True)
 
 # Instructions
 st.markdown("## Instructions:")
- # Instruction Steps
+# Instruction Steps
 st.write("""
-    
     To convert your compound to a Simplified Molecular Input Line Entry System (SMILES), please visit this website: [decimer.ai](https://decimer.ai/)
     """)
 st.markdown("1. Enter a SMILES string or upload a TXT file with SMILES in a single column.")
@@ -141,19 +100,9 @@ st.markdown("2. Choose the prediction model: Multi-Tasking Neural Network or Dec
 st.markdown("3. Click 'Predict' to see results.")
 
 # Sidebar info
-st.sidebar.markdown("## About")
-st.sidebar.write("This app predicts bioactivity class using two models:")
-st.sidebar.write("- **Multi-tasking Neural network** (Predicts IC50 values)")
-st.sidebar.write("- **Decision Tree** (Predicts bioactivity class)")
-
-# Adding ReadMe file download link
-st.sidebar.markdown("## ReadMe")
-st.sidebar.download_button(
-    label="Download ReadMe",
-    data=readme_content,
-    file_name="README.txt",
-    mime="text/plain"
-)
+show_about()
+show_readme()
+show_mission()
 
 # Input: Single SMILES string or file upload
 model_choice = st.radio("Choose a model:", ["Multi-Tasking Neural Network", "Decision Tree"], horizontal=True)
@@ -191,7 +140,6 @@ if st.button("Predict"):
     """,
     unsafe_allow_html=True
 )
-
 
 
                 else:
