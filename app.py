@@ -8,6 +8,7 @@ from keras.layers import TFSMLayer
 import numpy as np
 import chardet  # For automatic encoding detection
 import random
+from about import show_about
 from readme import show_readme
 from mission import show_mission
 
@@ -15,8 +16,8 @@ from mission import show_mission
 nn_model = TFSMLayer('multi_tasking_model_converted', call_endpoint='serving_default')
 scaler = joblib.load('scaler.pkl')
 selected_features = joblib.load('selected_features.pkl')
-stacking_clf = joblib.load('random_forest_model1.pkl')
-variance_threshold = joblib.load('variance_threshold1.pkl')
+stacking_clf = joblib.load('random_forest_model.pkl')
+variance_threshold = joblib.load('variance_threshold.pkl')
 
 # Detect encoding of uploaded file
 def detect_encoding(file):
@@ -84,24 +85,17 @@ def convert_pIC50_to_ng_per_uL(pIC50, mol_weight):
 # Streamlit UI
 st.set_page_config(page_title="Bioactivity Prediction", page_icon="🧪", layout="wide")
 
-# Sidebar
-st.sidebar.markdown("## About")
-st.sidebar.write("""
-This app predicts bioactivity class using two models:
-
-- **Multi-tasking Neural Network** (Predicts IC50 values)
-- **Decision Tree** (Predicts bioactivity class)
-
-It helps researchers analyze chemical compounds based on their SMILES representation.
-""")
-
+# Navigation
 st.sidebar.markdown("## Navigation")
 nav_home = st.sidebar.button("Home")
+nav_about = st.sidebar.button("About")
 nav_mission = st.sidebar.button("Mission")
 nav_readme = st.sidebar.button("README")
 
 if nav_home:
     st.session_state.page = "Home"
+elif nav_about:
+    st.session_state.page = "About"
 elif nav_mission:
     st.session_state.page = "Mission"
 elif nav_readme:
@@ -217,6 +211,9 @@ if st.session_state.page == "Home":
 
             except Exception as e:
                 st.error(f"Error processing the uploaded file: {e}")
+
+elif st.session_state.page == "About":
+    show_about()
 
 elif st.session_state.page == "Mission":
     show_mission()
