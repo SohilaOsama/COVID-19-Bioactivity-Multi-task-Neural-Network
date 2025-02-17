@@ -15,8 +15,8 @@ from mission import show_mission
 nn_model = TFSMLayer('multi_tasking_model_converted', call_endpoint='serving_default')
 scaler = joblib.load('scaler.pkl')
 selected_features = joblib.load('selected_features.pkl')
-stacking_clf = joblib.load('random_forest_model.pkl')
-variance_threshold = joblib.load('variance_threshold.pkl')
+stacking_clf = joblib.load('random_forest_model1.pkl')
+variance_threshold = joblib.load('variance_threshold1.pkl')
 
 # Detect encoding of uploaded file
 def detect_encoding(file):
@@ -70,7 +70,7 @@ def predict_with_stacking(smiles):
         X_filtered = variance_threshold.transform(fingerprints_df)
         prediction = stacking_clf.predict(X_filtered)
         confidence = random.uniform(0.7, 0.9)  # Random confidence in the good range
-        class_mapping = {0: 'inactive', 1: 'inactive', 2: 'active'}  # Map 'intermediate' to 'inactive'
+        class_mapping = {0: 'inactive', 1: 'active'}
         return class_mapping[prediction[0]], confidence
     return None, None
 
