@@ -8,7 +8,6 @@ from keras.layers import TFSMLayer
 import numpy as np
 import chardet  # For automatic encoding detection
 import random
-from about import show_about
 from readme import show_readme
 from mission import show_mission
 
@@ -85,17 +84,24 @@ def convert_pIC50_to_ng_per_uL(pIC50, mol_weight):
 # Streamlit UI
 st.set_page_config(page_title="Bioactivity Prediction", page_icon="🧪", layout="wide")
 
-# Navigation
+# Sidebar
+st.sidebar.markdown("## About")
+st.sidebar.write("""
+This app predicts bioactivity class using two models:
+
+- **Multi-tasking Neural Network** (Predicts IC50 values)
+- **Decision Tree** (Predicts bioactivity class)
+
+It helps researchers analyze chemical compounds based on their SMILES representation.
+""")
+
 st.sidebar.markdown("## Navigation")
 nav_home = st.sidebar.button("Home")
-nav_about = st.sidebar.button("About")
 nav_mission = st.sidebar.button("Mission")
 nav_readme = st.sidebar.button("README")
 
 if nav_home:
     st.session_state.page = "Home"
-elif nav_about:
-    st.session_state.page = "About"
 elif nav_mission:
     st.session_state.page = "Mission"
 elif nav_readme:
@@ -211,9 +217,6 @@ if st.session_state.page == "Home":
 
             except Exception as e:
                 st.error(f"Error processing the uploaded file: {e}")
-
-elif st.session_state.page == "About":
-    show_about()
 
 elif st.session_state.page == "Mission":
     show_mission()
