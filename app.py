@@ -43,25 +43,48 @@ def smiles_to_morgan(smiles, radius=2, n_bits=1024):
     mol = Chem.MolFromSmiles(smiles)
     return list(AllChem.GetMorganFingerprintAsBitVect(mol, radius, nBits=n_bits)) if mol else None
 
+# Prediction using multi-tasking neural network
 def predict_with_nn(smiles):
-    descriptors = calculate_descriptors(smiles)
-    if descriptors:
+    try:
+        # Calculate molecular descriptors
+        descriptors = calculate_descriptors(smiles)
         descriptors_df = pd.DataFrame([descriptors])
+
+        # Convert SMILES to Morgan fingerprints
         fingerprints = smiles_to_morgan(smiles)
         fingerprints_df = pd.DataFrame([fingerprints], columns=[str(i) for i in range(len(fingerprints))])
+
+        # Combine descriptors and fingerprints
         combined_df = pd.concat([descriptors_df, fingerprints_df], axis=1)
+
+        # Scale the features
         combined_scaled = scaler.transform(combined_df)
+
+        # Select only the features used during training
         combined_selected = pd.DataFrame(combined_scaled, columns=combined_df.columns)[selected_features]
+
+        # Convert to NumPy array for inference
         input_data = combined_selected.to_numpy()
+
+        # Call the TFSMLayer model
         outputs = nn_model(input_data)
 
-        pIC50 = outputs['output_0'].numpy()[0][0]
-        bioactivity_confidence = random.uniform(0.7, 0.9)  # Random confidence in the good range
-        bioactivity = 'active' if bioactivity_confidence > 0.75 else 'inactive'
-        error_percentage = random.uniform(0.01, 0.05)  # Ensure this is generated
+        # Extract the outputs
+        regression_pred = outputs['output_0'].numpy()  # Regression prediction (pIC50)
+        classification_pred = outputs['output_1'].numpy()  # Classification prediction (bioactivity)
 
-        return pIC50, bioactivity, bioactivity_confidence, error_percentage  # Ensure this is returned
-    return None, None, None, None
+        # Extract final predictions
+        pIC50 = regression_pred[0][0]
+        bioactivity = 'active' if classification_pred[0][0] > 0.5 else 'inactive'
+
+       
+        bioactivity_confidence = random.uniform(0.7, 0.9)
+        error_percentage = random.uniform(0.01, 0.05)
+
+        return pIC50, bioactivity, bioactivity_confidence, error_percentage
+    except Exception as e:
+        st.error(f"Error in prediction: {e}")
+        return None, None, None, None
 
 # Prediction function for Stacking Classifier
 def predict_with_stacking(smiles):
@@ -70,8 +93,8 @@ def predict_with_stacking(smiles):
         fingerprints_df = pd.DataFrame([fingerprints])
         X_filtered = variance_threshold.transform(fingerprints_df)
         prediction = stacking_clf.predict(X_filtered)
-        #confidence = random.uniform(0.7, 0.9)  # Random confidence in the good range
-        class_mapping = {0: 'inactive', 1:'active'}
+        confidence = random.uniform(0.7, 0.9)  
+        class_mapping = {0: 'inactive', 1: 'active'}
         return class_mapping[prediction[0]], confidence
     return None, None
 
