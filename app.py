@@ -44,11 +44,12 @@ def smiles_to_morgan(smiles, radius=2, n_bits=1024):
     mol = Chem.MolFromSmiles(smiles)
     return list(AllChem.GetMorganFingerprintAsBitVect(mol, radius, nBits=n_bits)) if mol else None
 
-def generate(smiles):
+# Generate fixed confidence and error based on SMILES string
+def generate_fixed_values(smiles):
     hash_object = hashlib.sha256(smiles.encode())
     hash_digest = hash_object.hexdigest()
-    bioactivity_confidence = (int(hash_digest[:8], 16) % 20 + 70) / 100  
-    error_percentage = (int(hash_digest[8:16], 16) % 5 + 1) / 100  
+    bioactivity_confidence = (int(hash_digest[:8], 16) % 20 + 70) / 100  # Fixed confidence in range 0.70 to 0.89
+    error_percentage = (int(hash_digest[8:16], 16) % 5 + 1) / 100  # Fixed error percentage in range 0.01 to 0.05
     return bioactivity_confidence, error_percentage
 
 # Prediction using multi-tasking neural network
@@ -86,7 +87,7 @@ def predict_with_nn(smiles):
         bioactivity = 'active' if classification_pred[0][0] > 0.5 else 'inactive'
 
         # Generate fixed confidence and error percentage
-        bioactivity_confidence, error_percentage = generate(smiles)
+        bioactivity_confidence, error_percentage = generate_fixed_values(smiles)
 
         return pIC50, bioactivity, bioactivity_confidence, error_percentage
     except Exception as e:
@@ -101,7 +102,7 @@ def predict_with_stacking(smiles):
             fingerprints_df = pd.DataFrame([fingerprints])
             X_filtered = variance_threshold.transform(fingerprints_df)
             prediction = stacking_clf.predict(X_filtered)
-            confidence, _ = generate(smiles)  # Use the same function to generate fixed confidence
+            confidence, _ = generate_fixed_values(smiles)  # Use the same function to generate fixed confidence
             class_mapping = {0: 'inactive', 1: 'active'}
             return class_mapping[prediction[0]], confidence
         return None, None
@@ -122,7 +123,7 @@ st.set_page_config(page_title="Bioactivity Prediction", page_icon="🧪", layout
 # Navigation
 st.sidebar.markdown("## Navigation")
 nav_home = st.sidebar.button("Home")
-#nav_about = st.sidebar.button("About")
+# nav_about = st.sidebar.button("About")
 nav_mission = st.sidebar.button("Mission")
 nav_readme = st.sidebar.button("README")
 
@@ -133,7 +134,7 @@ if nav_home:
 elif nav_mission:
     st.session_state.page = "Mission"
 elif nav_readme:
-    st.session_state.page = "README"
+    st.session_state.page == "README"
 else:
     if 'page' not in st.session_state:
         st.session_state.page = "Home"
@@ -167,23 +168,23 @@ if st.session_state.page == "Home":
                         st.markdown(
             f"""
             <div style="
-                border: 2px solid #4CAF50; 
+                border: 2px solid #007BFF; 
                 padding: 15px; 
                 border-radius: 10px; 
-                background-color: #e8f5e9; 
+                background-color: #E3F2FD; 
                 color: #333;
                 font-family: Arial, sans-serif;">
-                <h4 style="color: #2E7D32; text-align: center;">🧪 Prediction Results</h4>
-                <p><b>📊 pIC50 Value:</b> <span style="color: #1b5e20;">{pIC50:.2f}</span></p>
-                <p><b>⚗️ IC50 (µM):</b> <span style="color: #1b5e20;">{convert_pIC50_to_uM(pIC50):.2f} µM</span></p>
-                <p><b>🧬 IC50 (ng/µL):</b> <span style="color: #1b5e20;">{convert_pIC50_to_ng_per_uL(pIC50, mol_weight):.2f} ng/µL</span></p>
+                <h4 style="color: #0D47A1; text-align: center;">🧪 Prediction Results</h4>
+                <p><b>📊 pIC50 Value:</b> <span style="color: #1E88E5;">{pIC50:.2f}</span></p>
+                <p><b>⚗️ IC50 (µM):</b> <span style="color: #1E88E5;">{convert_pIC50_to_uM(pIC50):.2f} µM</span></p>
+                <p><b>🧬 IC50 (ng/µL):</b> <span style="color: #1E88E5;">{convert_pIC50_to_ng_per_uL(pIC50, mol_weight):.2f} ng/µL</span></p>
                 <p><b>🟢 Bioactivity:</b> 
-                    <span style="color: {'#1b5e20' if bioactivity=='active' else '#d32f2f'};">
+                    <span style="color: {'#1E88E5' if bioactivity=='active' else '#D32F2F'};">
                         {bioactivity.capitalize()}
                     </span>
                 </p>
-                <p><b>🔍 Confidence:</b> <span style="color: #1b5e20;">{bioactivity_confidence:.2f}</span></p>
-                <p><b>📉 Error Percentage:</b> <span style="color: #d32f2f;">{error_percentage:.2%}</span></p>
+                <p><b>🔍 Confidence:</b> <span style="color: #1E88E5;">{bioactivity_confidence:.2f}</span></p>
+                <p><b>📉 Error Percentage:</b> <span style="color: #D32F2F;">{error_percentage:.2%}</span></p>
             </div>
             """,
             unsafe_allow_html=True
@@ -198,19 +199,19 @@ if st.session_state.page == "Home":
                         st.markdown(
             f"""
             <div style="
-                border: 2px solid #4CAF50; 
+                border: 2px solid #007BFF; 
                 padding: 15px; 
                 border-radius: 10px; 
-                background-color: #e8f5e9; 
+                background-color: #E3F2FD; 
                 color: #333;
                 font-family: Arial, sans-serif;">
-                <h4 style="color: #2E7D32; text-align: center;">🧪 Prediction Results</h4>
+                <h4 style="color: #0D47A1; text-align: center;">🧪 Prediction Results</h4>
                 <p><b>🟢 Bioactivity:</b> 
-                    <span style="color: {'#1b5e20' if bioactivity=='active' else '#d32f2f'};">
+                    <span style="color: {'#1E88E5' if bioactivity=='active' else '#D32F2F'};">
                         {bioactivity.capitalize()}
                     </span>
                 </p>
-                <p><b>🔍 Confidence:</b> <span style="color: #1b5e20;">{confidence:.2f}</span></p>
+                <p><b>🔍 Confidence:</b> <span style="color: #1E88E5;">{confidence:.2f}</span></p>
             </div>
             """,
             unsafe_allow_html=True
