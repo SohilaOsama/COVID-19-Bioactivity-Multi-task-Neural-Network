@@ -6,23 +6,33 @@ from rdkit.Chem import AllChem, Descriptors
 import tensorflow as tf
 from keras.layers import TFSMLayer
 import numpy as np
-import chardet  # For automatic encoding detection
+import chardet
 import random
 from readme import show_readme
 from mission import show_mission
+from sklearn.exceptions import InconsistentVersionWarning
+import warnings
 
 # Load models and preprocessing steps
 nn_model = TFSMLayer('multi_tasking_model_converted', call_endpoint='serving_default')
-scaler = joblib.load('scaler.pkl')
-selected_features = joblib.load('selected_features.pkl')
-stacking_clf = joblib.load('random_forest_model1.pkl')
-variance_threshold = joblib.load('variance_threshold1.pkl')
+
+def load_model(file_path):
+    try:
+        return joblib.load(file_path)
+    except InconsistentVersionWarning as e:
+        st.error(f"Model version mismatch: {e}")
+        return None
+
+scaler = load_model('scaler.pkl')
+selected_features = load_model('selected_features.pkl')
+stacking_clf = load_model('random_forest_model1.pkl')
+variance_threshold = load_model('variance_threshold1.pkl')
 
 # Detect encoding of uploaded file
 def detect_encoding(file):
-    raw_data = file.read(4096)  # Read a small chunk
-    file.seek(0)  # Reset file position
-    result = chardet.detect(raw_data)  # Detect encoding
+    raw_data = file.read(4096)
+    file.seek(0)
+    result = chardet.detect(raw_data)
     return result["encoding"]
 
 # Compute molecular descriptors
@@ -55,36 +65,36 @@ def predict_with_nn(smiles):
         outputs = nn_model(input_data)
 
         pIC50 = outputs['output_0'].numpy()[0][0]
-        bioactivity_confidence = random.uniform(0.7, 0.9)  # Random confidence in the good range
+        bioactivity_confidence = random.uniform(0.7, 0.9)
         bioactivity = 'active' if bioactivity_confidence > 0.75 else 'inactive'
-        error_percentage = random.uniform(0.01, 0.05)  # Ensure this is generated
+        error_percentage = random.uniform(0.01, 0.05)
 
-        return pIC50, bioactivity, bioactivity_confidence, error_percentage  # Ensure this is returned
+        return pIC50, bioactivity, bioactivity_confidence, error_percentage
     return None, None, None, None
 
-# Prediction function for Stacking Classifier
 def predict_with_stacking(smiles):
     fingerprints = smiles_to_morgan(smiles)
     if fingerprints:
         fingerprints_df = pd.DataFrame([fingerprints])
         X_filtered = variance_threshold.transform(fingerprints_df)
-        prediction = stacking_clf.predict(X_filtered)
-        confidence = random.uniform(0.7, 0.9)  # Random confidence in the good range
+        try:
+            prediction = stacking_clf.predict(X_filtered)
+        except AttributeError as e:
+            st.error(f"Model prediction error: {e}")
+            return None, None
+        confidence = random.uniform(0.7, 0.9)
         class_mapping = {0: 'inactive', 1: 'active'}
         return class_mapping[prediction[0]], confidence
     return None, None
 
-# Convert pIC50 values
 def convert_pIC50_to_uM(pIC50):
     return 10 ** (-pIC50) * 1e6
 
 def convert_pIC50_to_ng_per_uL(pIC50, mol_weight):
     return convert_pIC50_to_uM(pIC50) * mol_weight / 1000
 
-# Streamlit UI
 st.set_page_config(page_title="Bioactivity Prediction", page_icon="🧪", layout="wide")
 
-# Sidebar
 st.sidebar.markdown("## About")
 st.sidebar.write("""
 This app predicts bioactivity class using two models:
@@ -114,9 +124,7 @@ if st.session_state.page == "Home":
     st.title("🧪 Bioactivity Prediction from SMILES")
     st.image("images/Drug.png", use_container_width=True)
 
-    # Instructions
     st.markdown("## Instructions:")
-    # Instruction Steps
     st.write("""
         To convert your compound to a Simplified Molecular Input Line Entry System (SMILES), please visit this website: [decimer.ai](https://decimer.ai/)
         """)
@@ -124,7 +132,6 @@ if st.session_state.page == "Home":
     st.markdown("2. Choose the prediction model: Multi-Tasking Neural Network or Decision Tree.")
     st.markdown("3. Click 'Predict' to see results.")
 
-    # Input: Single SMILES string or file upload
     model_choice = st.radio("Choose a model:", ["Multi-Tasking Neural Network", "Decision Tree"], horizontal=True)
     smiles_input = st.text_input("Enter SMILES:")
     uploaded_file = st.file_uploader("Upload a TXT file", type=["csv", "txt", "xls", "xlsx"])
