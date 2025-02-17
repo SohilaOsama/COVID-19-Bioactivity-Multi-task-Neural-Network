@@ -131,14 +131,14 @@ with open("script.js") as f:
 # Navigation
 st.sidebar.markdown("## Navigation")
 nav_home = st.sidebar.button("Home")
-nav_about = st.sidebar.button("About")
+#nav_about = st.sidebar.button("About")
 nav_mission = st.sidebar.button("Mission")
 nav_readme = st.sidebar.button("README")
 
 if nav_home:
     st.session_state.page = "Home"
-elif nav_about:
-    st.session_state.page = "About"
+# elif nav_about:
+#     st.session_state.page = "About"
 elif nav_mission:
     st.session_state.page = "Mission"
 elif nav_readme:
@@ -263,8 +263,8 @@ if st.session_state.page == "Home":
             except Exception as e:
                 st.error(f"Error processing the uploaded file: {e}")
 
-elif st.session_state.page == "About":
-    show_about()
+# elif st.session_state.page == "About":
+#     show_about()
 
 elif st.session_state.page == "Mission":
     show_mission()
