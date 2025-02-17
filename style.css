@@ -68,7 +68,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .button-primary {
-    background-color: #004d40;
+    background-color: #0a66c3;
     color: #fff;
     padding: 12px 24px;
     border-radius: 8px;
@@ -77,14 +77,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .button-primary:hover {
-    background-color: #00796b;
+    background-color: #0977c0;
     box-shadow: 0 4px 15px rgba(0, 77, 64, 0.3);
 }
 
 footer {
     text-align: center;
     padding: 15px;
-    background-color: #004d40;
+    background-color: #1175b3;
     color: white;
     position: fixed;
     width: 100%;
