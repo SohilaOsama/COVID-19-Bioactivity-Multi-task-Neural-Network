@@ -115,14 +115,14 @@ st.set_page_config(page_title="Bioactivity Prediction", page_icon="🧪", layout
 # Navigation
 st.sidebar.markdown("## Navigation")
 nav_home = st.sidebar.button("Home")
-nav_about = st.sidebar.button("About")
+#nav_about = st.sidebar.button("About")
 nav_mission = st.sidebar.button("Mission")
 nav_readme = st.sidebar.button("README")
 
 if nav_home:
     st.session_state.page = "Home"
-elif nav_about:
-    st.session_state.page = "About"
+# elif nav_about:
+#     st.session_state.page = "About"
 elif nav_mission:
     st.session_state.page = "Mission"
 elif nav_readme:
