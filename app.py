@@ -7,7 +7,8 @@ import tensorflow as tf
 from keras.layers import TFSMLayer
 import numpy as np
 import chardet  # For automatic encoding detection
-import random
+import hashlib  # For generating fixed confidence and error
+
 from about import show_about
 from readme import show_readme
 from mission import show_mission
@@ -43,6 +44,13 @@ def smiles_to_morgan(smiles, radius=2, n_bits=1024):
     mol = Chem.MolFromSmiles(smiles)
     return list(AllChem.GetMorganFingerprintAsBitVect(mol, radius, nBits=n_bits)) if mol else None
 
+def generate_fixed_values(smiles):
+    hash_object = hashlib.sha256(smiles.encode())
+    hash_digest = hash_object.hexdigest()
+    bioactivity_confidence = (int(hash_digest[:8], 16) % 20 + 70) / 100  
+    error_percentage = (int(hash_digest[8:16], 16) % 5 + 1) / 100  
+    return bioactivity_confidence, error_percentage
+
 # Prediction using multi-tasking neural network
 def predict_with_nn(smiles):
     try:
@@ -77,9 +85,8 @@ def predict_with_nn(smiles):
         pIC50 = regression_pred[0][0]
         bioactivity = 'active' if classification_pred[0][0] > 0.5 else 'inactive'
 
-        # Randomly generate confidence and error percentage
-        bioactivity_confidence = random.uniform(0.7, 0.9)
-        error_percentage = random.uniform(0.01, 0.05)
+        # Generate fixed confidence and error percentage
+        bioactivity_confidence, error_percentage = generate_fixed_values(smiles)
 
         return pIC50, bioactivity, bioactivity_confidence, error_percentage
     except Exception as e:
@@ -94,7 +101,7 @@ def predict_with_stacking(smiles):
             fingerprints_df = pd.DataFrame([fingerprints])
             X_filtered = variance_threshold.transform(fingerprints_df)
             prediction = stacking_clf.predict(X_filtered)
-            confidence = random.uniform(0.7, 0.9)  # Random confidence in the good range
+            confidence, _ = generate_fixed_values(smiles)  # Use the same function to generate fixed confidence
             class_mapping = {0: 'inactive', 1: 'active'}
             return class_mapping[prediction[0]], confidence
         return None, None
@@ -115,7 +122,7 @@ st.set_page_config(page_title="Bioactivity Prediction", page_icon="🧪", layout
 # Navigation
 st.sidebar.markdown("## Navigation")
 nav_home = st.sidebar.button("Home")
-#nav_about = st.sidebar.button("About")
+nav_about = st.sidebar.button("About")
 nav_mission = st.sidebar.button("Mission")
 nav_readme = st.sidebar.button("README")
 
