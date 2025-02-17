@@ -86,114 +86,122 @@ def convert_pIC50_to_ng_per_uL(pIC50, mol_weight):
 # Streamlit UI
 st.set_page_config(page_title="Bioactivity Prediction", page_icon="🧪", layout="wide")
 
-st.title("🧪 Bioactivity Prediction from SMILES")
-st.image("images/Drug.png", use_container_width=True)
+# Navigation
+page = st.sidebar.selectbox("Navigation", ["Home", "About", "README"])
 
-# Instructions
-st.markdown("## Instructions:")
-# Instruction Steps
-st.write("""
-    To convert your compound to a Simplified Molecular Input Line Entry System (SMILES), please visit this website: [decimer.ai](https://decimer.ai/)
-    """)
-st.markdown("1. Enter a SMILES string or upload a TXT file with SMILES in a single column.")
-st.markdown("2. Choose the prediction model: Multi-Tasking Neural Network or Decision Tree.")
-st.markdown("3. Click 'Predict' to see results.")
+if page == "Home":
+    st.title("🧪 Bioactivity Prediction from SMILES")
+    st.image("images/Drug.png", use_container_width=True)
 
-# Sidebar info
-show_about()
-show_readme()
-show_mission()
+    # Instructions
+    st.markdown("## Instructions:")
+    # Instruction Steps
+    st.write("""
+        To convert your compound to a Simplified Molecular Input Line Entry System (SMILES), please visit this website: [decimer.ai](https://decimer.ai/)
+        """)
+    st.markdown("1. Enter a SMILES string or upload a TXT file with SMILES in a single column.")
+    st.markdown("2. Choose the prediction model: Multi-Tasking Neural Network or Decision Tree.")
+    st.markdown("3. Click 'Predict' to see results.")
 
-# Input: Single SMILES string or file upload
-model_choice = st.radio("Choose a model:", ["Multi-Tasking Neural Network", "Decision Tree"], horizontal=True)
-smiles_input = st.text_input("Enter SMILES:")
-uploaded_file = st.file_uploader("Upload a TXT file", type=["csv", "txt", "xls", "xlsx"])
+    # Input: Single SMILES string or file upload
+    model_choice = st.radio("Choose a model:", ["Multi-Tasking Neural Network", "Decision Tree"], horizontal=True)
+    smiles_input = st.text_input("Enter SMILES:")
+    uploaded_file = st.file_uploader("Upload a TXT file", type=["csv", "txt", "xls", "xlsx"])
 
-if st.button("Predict"):
-    if smiles_input:
-        with st.spinner("Predicting..."):
-            if model_choice == "Multi-Tasking Neural Network":
-                pIC50, bioactivity, bioactivity_confidence, error_percentage = predict_with_nn(smiles_input)
-                if pIC50 is not None:
-                    mol_weight = calculate_descriptors(smiles_input)['MolWt']
-                    st.markdown(
-    f"""
-    <div style="
-        border: 2px solid #4CAF50; 
-        padding: 15px; 
-        border-radius: 10px; 
-        background-color: #e8f5e9; 
-        color: #333;
-        font-family: Arial, sans-serif;">
-        <h4 style="color: #2E7D32; text-align: center;">🧪 Prediction Results</h4>
-        <p><b>📊 pIC50 Value:</b> <span style="color: #1b5e20;">{pIC50:.2f}</span></p>
-        <p><b>⚗️ IC50 (µM):</b> <span style="color: #1b5e20;">{convert_pIC50_to_uM(pIC50):.2f} µM</span></p>
-        <p><b>🧬 IC50 (ng/µL):</b> <span style="color: #1b5e20;">{convert_pIC50_to_ng_per_uL(pIC50, mol_weight):.2f} ng/µL</span></p>
-        <p><b>🟢 Bioactivity:</b> 
-            <span style="color: {'#1b5e20' if bioactivity=='active' else '#d32f2f'};">
-                {bioactivity.capitalize()}
-            </span>
-        </p>
-        <p><b>🔍 Confidence:</b> <span style="color: #1b5e20;">{bioactivity_confidence:.2f}</span></p>
-        <p><b>📉 Error Percentage:</b> <span style="color: #d32f2f;">{error_percentage:.2%}</span></p>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-
-                else:
-                    st.error("Invalid SMILES string.")
-            else:
-                bioactivity, confidence = predict_with_stacking(smiles_input)
-                if bioactivity:
-                    st.success(f"Predicted Bioactivity Class: {bioactivity} with confidence {confidence:.2f}")
-                else:
-                    st.error("Invalid SMILES string.")
-    elif uploaded_file:
-        try:
-            detected_encoding = detect_encoding(uploaded_file)
-            file_extension = uploaded_file.name.split(".")[-1].lower()
-            
-            if file_extension == "csv":
-                df = pd.read_csv(uploaded_file, encoding=detected_encoding)
-            elif file_extension == "txt":
-                df = pd.read_csv(uploaded_file, delimiter="\t", encoding=detected_encoding)
-            elif file_extension in ["xls", "xlsx"]:
-                df = pd.read_excel(uploaded_file, engine="openpyxl")
-            else:
-                st.error("Unsupported file format. Please upload CSV, TXT, XLS, or XLSX.")
-                st.stop()
-
-            if df.shape[1] != 1:
-                st.error("The uploaded file must contain only one column with SMILES strings.")
-                st.stop()
-
-            df.columns = ["SMILES"]
-            df.dropna(inplace=True)
-
-            results = []
-            for smiles in df["SMILES"]:
+    if st.button("Predict"):
+        if smiles_input:
+            with st.spinner("Predicting..."):
                 if model_choice == "Multi-Tasking Neural Network":
-                    pIC50, bioactivity, bioactivity_confidence, error_percentage = predict_with_nn(smiles)
+                    pIC50, bioactivity, bioactivity_confidence, error_percentage = predict_with_nn(smiles_input)
                     if pIC50 is not None:
-                        mol_weight = calculate_descriptors(smiles)['MolWt']
-                        results.append([smiles, pIC50, convert_pIC50_to_uM(pIC50), convert_pIC50_to_ng_per_uL(pIC50, mol_weight), bioactivity, bioactivity_confidence, error_percentage])
+                        mol_weight = calculate_descriptors(smiles_input)['MolWt']
+                        st.markdown(
+            f"""
+            <div style="
+                border: 2px solid #4CAF50; 
+                padding: 15px; 
+                border-radius: 10px; 
+                background-color: #e8f5e9; 
+                color: #333;
+                font-family: Arial, sans-serif;">
+                <h4 style="color: #2E7D32; text-align: center;">🧪 Prediction Results</h4>
+                <p><b>📊 pIC50 Value:</b> <span style="color: #1b5e20;">{pIC50:.2f}</span></p>
+                <p><b>⚗️ IC50 (µM):</b> <span style="color: #1b5e20;">{convert_pIC50_to_uM(pIC50):.2f} µM</span></p>
+                <p><b>🧬 IC50 (ng/µL):</b> <span style="color: #1b5e20;">{convert_pIC50_to_ng_per_uL(pIC50, mol_weight):.2f} ng/µL</span></p>
+                <p><b>🟢 Bioactivity:</b> 
+                    <span style="color: {'#1b5e20' if bioactivity=='active' else '#d32f2f'};">
+                        {bioactivity.capitalize()}
+                    </span>
+                </p>
+                <p><b>🔍 Confidence:</b> <span style="color: #1b5e20;">{bioactivity_confidence:.2f}</span></p>
+                <p><b>📉 Error Percentage:</b> <span style="color: #d32f2f;">{error_percentage:.2%}</span></p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
                     else:
-                        results.append([smiles, "Error", "Error", "Error", "Error", "Error", "Error"])
+                        st.error("Invalid SMILES string.")
                 else:
-                    bioactivity, confidence = predict_with_stacking(smiles)
-                    results.append([smiles, bioactivity if bioactivity else "Error", confidence if confidence else "Error"])
+                    bioactivity, confidence = predict_with_stacking(smiles_input)
+                    if bioactivity:
+                        st.success(f"Predicted Bioactivity Class: {bioactivity} with confidence {confidence:.2f}")
+                    else:
+                        st.error("Invalid SMILES string.")
+        elif uploaded_file:
+            try:
+                detected_encoding = detect_encoding(uploaded_file)
+                file_extension = uploaded_file.name.split(".")[-1].lower()
+                
+                if file_extension == "csv":
+                    df = pd.read_csv(uploaded_file, encoding=detected_encoding)
+                elif file_extension == "txt":
+                    df = pd.read_csv(uploaded_file, delimiter="\t", encoding=detected_encoding)
+                elif file_extension in ["xls", "xlsx"]:
+                    df = pd.read_excel(uploaded_file, engine="openpyxl")
+                else:
+                    st.error("Unsupported file format. Please upload CSV, TXT, XLS, or XLSX.")
+                    st.stop()
 
-            if model_choice == "Multi-Tasking Neural Network":
-                results_df = pd.DataFrame(results, columns=["SMILES", "pIC50", "IC50 (µM)", "IC50 (ng/µL)", "Bioactivity", "Confidence", "Error Percentage"])
-            else:
-                results_df = pd.DataFrame(results, columns=["SMILES", "Bioactivity", "Confidence"])
+                if df.shape[1] != 1:
+                    st.error("The uploaded file must contain only one column with SMILES strings.")
+                    st.stop()
 
-            st.dataframe(results_df)
-            csv = results_df.to_csv(index=False).encode('utf-8')
-            st.download_button("Download Predictions", csv, "bioactivity_predictions.csv", "text/csv")
-            st.success("Predictions completed.")
+                df.columns = ["SMILES"]
+                df.dropna(inplace=True)
 
-        except Exception as e:
-            st.error(f"Error processing the uploaded file: {e}")
+                results = []
+                for smiles in df["SMILES"]:
+                    if model_choice == "Multi-Tasking Neural Network":
+                        pIC50, bioactivity, bioactivity_confidence, error_percentage = predict_with_nn(smiles)
+                        if pIC50 is not None:
+                            mol_weight = calculate_descriptors(smiles)['MolWt']
+                            results.append([smiles, pIC50, convert_pIC50_to_uM(pIC50), convert_pIC50_to_ng_per_uL(pIC50, mol_weight), bioactivity, bioactivity_confidence, error_percentage])
+                        else:
+                            results.append([smiles, "Error", "Error", "Error", "Error", "Error", "Error"])
+                    else:
+                        bioactivity, confidence = predict_with_stacking(smiles)
+                        results.append([smiles, bioactivity if bioactivity else "Error", confidence if confidence else "Error"])
+
+                if model_choice == "Multi-Tasking Neural Network":
+                    results_df = pd.DataFrame(results, columns=["SMILES", "pIC50", "IC50 (µM)", "IC50 (ng/µL)", "Bioactivity", "Confidence", "Error Percentage"])
+                else:
+                    results_df = pd.DataFrame(results, columns=["SMILES", "Bioactivity", "Confidence"])
+
+                st.dataframe(results_df)
+                csv = results_df.to_csv(index=False).encode('utf-8')
+                st.download_button("Download Predictions", csv, "bioactivity_predictions.csv", "text/csv")
+                st.success("Predictions completed.")
+
+            except Exception as e:
+                st.error(f"Error processing the uploaded file: {e}")
+
+elif page == "About":
+    show_about()
+    mission_page = st.sidebar.button("Our Mission")
+    if mission_page:
+        show_mission()
+
+elif page == "README":
+    show_readme()
