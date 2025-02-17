@@ -70,7 +70,7 @@ def predict_with_stacking(smiles):
         X_filtered = variance_threshold.transform(fingerprints_df)
         prediction = stacking_clf.predict(X_filtered)
         confidence = random.uniform(0.7, 0.9)  # Random confidence in the good range
-        class_mapping = {0: 'inactive', 1: 'intermediate', 2: 'active'}
+        class_mapping = {0: 'inactive', 1: 'inactive', 2: 'active'}  # Map 'intermediate' to 'inactive'
         return class_mapping[prediction[0]], confidence
     return None, None
 
