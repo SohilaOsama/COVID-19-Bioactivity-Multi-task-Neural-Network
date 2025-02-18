@@ -44,7 +44,7 @@ def smiles_to_morgan(smiles, radius=2, n_bits=1024):
     mol = Chem.MolFromSmiles(smiles)
     return list(AllChem.GetMorganFingerprintAsBitVect(mol, radius, nBits=n_bits)) if mol else None
 
-
+# Generate fixed confidence and error percentage
 def generate(smiles):
     hash_object = hashlib.sha256(smiles.encode())
     hash_digest = hash_object.hexdigest()
@@ -103,7 +103,7 @@ def predict_with_stacking(smiles):
             X_filtered = variance_threshold.transform(fingerprints_df)
             prediction = stacking_clf.predict(X_filtered)
             confidence, _ = generate(smiles)  # Use the same function to generate fixed confidence
-            class_mapping = {0: 'inactive', 1:'active'}
+            class_mapping = {0: 'inactive', 1: 'active'}
             return class_mapping[prediction[0]], confidence
         return None, None
     except Exception as e:
@@ -131,7 +131,7 @@ with open("script.js") as f:
 # Navigation
 st.sidebar.markdown("## Navigation")
 nav_home = st.sidebar.button("Home")
-#nav_about = st.sidebar.button("About")
+# nav_about = st.sidebar.button("About")
 nav_mission = st.sidebar.button("Mission")
 nav_readme = st.sidebar.button("README")
 
@@ -153,7 +153,6 @@ if st.session_state.page == "Home":
 
     # Instructions
     st.markdown("## Instructions:")
-    # Instruction Steps
     st.write("""
         To convert your compound to a Simplified Molecular Input Line Entry System (SMILES), please visit this website: [decimer.ai](https://decimer.ai/)
         """)
@@ -174,45 +173,42 @@ if st.session_state.page == "Home":
                     if pIC50 is not None:
                         mol_weight = calculate_descriptors(smiles_input)['MolWt']
                         st.markdown(
-            f"""
-            <div class="result-container">
-                <h4>🧪 Prediction Results</h4>
-                <p><b>📊 pIC50 Value:</b> <span class="result-value">{pIC50:.2f}</span></p>
-                <p><b>⚗️ IC50 (µM):</b> <span class="result-value">{convert_pIC50_to_uM(pIC50):.2f} µM</span></p>
-                <p><b>🧬 IC50 (ng/µL):</b> <span class="result-value">{convert_pIC50_to_ng_per_uL(pIC50, mol_weight):.2f} ng/µL</span></p>
-                <p><b>🟢 Bioactivity:</b> 
-                    <span class="result-value" style="color: {'#1E88E5' if bioactivity=='active' else '#D32F2F'};">
-                        {bioactivity.capitalize()}
-                    </span>
-                </p>
-                <p><b>🔍 Confidence:</b> <span class="result-value">{bioactivity_confidence:.2f}</span></p>
-                <p><b>📉 Error Percentage:</b> <span class="result-value" style="color: #D32F2F;">{error_percentage:.2%}</span></p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-
+                            f"""
+                            <div class="result-container">
+                                <h4>🧪 Prediction Results</h4>
+                                <p><b>📊 pIC50 Value:</b> <span class="result-value">{pIC50:.2f}</span></p>
+                                <p><b>⚗️ IC50 (µM):</b> <span class="result-value">{convert_pIC50_to_uM(pIC50):.2f} µM</span></p>
+                                <p><b>🧬 IC50 (ng/µL):</b> <span class="result-value">{convert_pIC50_to_ng_per_uL(pIC50, mol_weight):.2f} ng/µL</span></p>
+                                <p><b>🟢 Bioactivity:</b> 
+                                    <span class="result-value" style="color: {'#1E88E5' if bioactivity=='active' else '#D32F2F'};">
+                                        {bioactivity.capitalize()}
+                                    </span>
+                                </p>
+                                <p><b>🔍 Confidence:</b> <span class="result-value">{bioactivity_confidence:.2f}</span></p>
+                                <p><b>📉 Error Percentage:</b> <span class="result-value" style="color: #D32F2F;">{error_percentage:.2%}</span></p>
+                            </div>
+                            """,
+                            unsafe_allow_html=True
+                        )
                     else:
                         st.error("Invalid SMILES string.")
                 else:
                     bioactivity, confidence = predict_with_stacking(smiles_input)
                     if bioactivity:
                         st.markdown(
-            f"""
-            <div class="result-container">
-                <h4>🧪 Prediction Results</h4>
-                <p><b>🟢 Bioactivity:</b> 
-                    <span class="result-value" style="color: {'#1E88E5' if bioactivity=='active' else '#D32F2F'};">
-                        {bioactivity.capitalize()}
-                    </span>
-                </p>
-                <p><b>🔍 Confidence:</b> <span class="result-value">{confidence:.2f}</span></p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
+                            f"""
+                            <div class="result-container">
+                                <h4>🧪 Prediction Results</h4>
+                                <p><b>🟢 Bioactivity:</b> 
+                                    <span class="result-value" style="color: {'#1E88E5' if bioactivity=='active' else '#D32F2F'};">
+                                        {bioactivity.capitalize()}
+                                    </span>
+                                </p>
+                                <p><b>🔍 Confidence:</b> <span class="result-value">{confidence:.2f}</span></p>
+                            </div>
+                            """,
+                            unsafe_allow_html=True
+                        )
                     else:
                         st.error("Invalid SMILES string.")
         elif uploaded_file:
@@ -262,9 +258,6 @@ if st.session_state.page == "Home":
 
             except Exception as e:
                 st.error(f"Error processing the uploaded file: {e}")
-
-# elif st.session_state.page == "About":
-#     show_about()
 
 elif st.session_state.page == "Mission":
     show_mission()
