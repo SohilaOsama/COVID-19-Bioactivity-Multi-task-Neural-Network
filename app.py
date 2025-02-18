@@ -17,7 +17,7 @@ from mission import show_mission
 nn_model = TFSMLayer('multi_tasking_model_converted', call_endpoint='serving_default')
 scaler = joblib.load('scaler.pkl')
 selected_features = joblib.load('selected_features.pkl')
-stacking_clf = joblib.load('random_forest_model1.pkl')
+stacking_clf = joblib.load('stacking_model1.pkl')  # Ensure this is the correct stacking model
 variance_threshold = joblib.load('variance_threshold1.pkl')
 
 # Detect encoding of uploaded file
