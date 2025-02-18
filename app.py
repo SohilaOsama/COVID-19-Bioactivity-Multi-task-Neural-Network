@@ -117,6 +117,9 @@ def convert_pIC50_to_uM(pIC50):
 def convert_pIC50_to_ng_per_uL(pIC50, mol_weight):
     return convert_pIC50_to_uM(pIC50) * mol_weight / 1000
 
+def convert_pIC50_to_nM(pIC50):
+    return 10 ** (-pIC50) * 1e9
+
 # Streamlit UI
 st.set_page_config(page_title="Bioactivity Prediction", page_icon="🧪", layout="wide")
 
@@ -178,6 +181,7 @@ if st.session_state.page == "Home":
                                 <h4>🧪 Prediction Results</h4>
                                 <p><b>📊 pIC50 Value:</b> <span class="result-value">{pIC50:.2f}</span></p>
                                 <p><b>⚗️ IC50 (µM):</b> <span class="result-value">{convert_pIC50_to_uM(pIC50):.2f} µM</span></p>
+                                <p><b>🧪 IC50 (nM):</b> <span class="result-value">{convert_pIC50_to_nM(pIC50):.2f} nM</span></p>
                                 <p><b>🧬 IC50 (ng/µL):</b> <span class="result-value">{convert_pIC50_to_ng_per_uL(pIC50, mol_weight):.2f} ng/µL</span></p>
                                 <p><b>🟢 Bioactivity:</b> 
                                     <span class="result-value" style="color: {'#1E88E5' if bioactivity=='active' else '#D32F2F'};">
@@ -239,15 +243,15 @@ if st.session_state.page == "Home":
                         pIC50, bioactivity, bioactivity_confidence, error_percentage = predict_with_nn(smiles)
                         if pIC50 is not None:
                             mol_weight = calculate_descriptors(smiles)['MolWt']
-                            results.append([smiles, pIC50, convert_pIC50_to_uM(pIC50), convert_pIC50_to_ng_per_uL(pIC50, mol_weight), bioactivity, bioactivity_confidence, error_percentage])
+                            results.append([smiles, pIC50, convert_pIC50_to_uM(pIC50), convert_pIC50_to_nM(pIC50), convert_pIC50_to_ng_per_uL(pIC50, mol_weight), bioactivity, bioactivity_confidence, error_percentage])
                         else:
-                            results.append([smiles, "Error", "Error", "Error", "Error", "Error", "Error"])
+                            results.append([smiles, "Error", "Error", "Error", "Error", "Error", "Error", "Error"])
                     else:
                         bioactivity, confidence = predict_with_stacking(smiles)
                         results.append([smiles, bioactivity if bioactivity else "Error", confidence if confidence else "Error"])
 
                 if model_choice == "Multi-Tasking Neural Network":
-                    results_df = pd.DataFrame(results, columns=["SMILES", "pIC50", "IC50 (µM)", "IC50 (ng/µL)", "Bioactivity", "Confidence", "Error Percentage"])
+                    results_df = pd.DataFrame(results, columns=["SMILES", "pIC50", "IC50 (µM)", "IC50 (nM)", "IC50 (ng/µL)", "Bioactivity", "Confidence", "Error Percentage"])
                 else:
                     results_df = pd.DataFrame(results, columns=["SMILES", "Bioactivity", "Confidence"])
 
