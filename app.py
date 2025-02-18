@@ -94,28 +94,22 @@ def predict_with_nn(smiles):
         st.error(f"Error in prediction: {e}")
         return None, None, None, None
 
-# Prediction using stacking classifier
+# Prediction function for Stacking Classifier
 def predict_with_stacking(smiles):
     try:
-        # Convert SMILES to Morgan fingerprints
         fingerprints = smiles_to_morgan(smiles)
-
-        # Convert to DataFrame for compatibility with preprocessing
-        fingerprints_df = pd.DataFrame([fingerprints])
-
-        # Apply VarianceThreshold to remove redundant features
-        X_filtered = variance_threshold.transform(fingerprints_df)
-
-        # Predict using the stacking model
-        prediction = stacking_clf.predict(X_filtered)
-
-        # Map prediction back to class names
-        class_mapping_reverse = {0: 'inactive', 1:'active'}
-        predicted_class = class_mapping_reverse[prediction[0]]
-        return predicted_class
-
+        if fingerprints:
+            fingerprints_df = pd.DataFrame([fingerprints])
+            X_filtered = variance_threshold.transform(fingerprints_df)
+            prediction = stacking_clf.predict(X_filtered)
+            confidence, _ = generate(smiles)  # Use the same function to generate fixed confidence
+            class_mapping = {0: 'inactive', 1: 'intermediate', 2: 'active'}
+            return class_mapping[prediction[0]], confidence
+        return None, None
     except Exception as e:
-        raise ValueError(f"Error during stacking model prediction: {e}")
+        st.error(f"Error in prediction: {e}")
+        return None, None
+
 # Convert pIC50 values
 def convert_pIC50_to_uM(pIC50):
     return 10 ** (-pIC50) * 1e6
