@@ -6,5 +6,6 @@ joblib
 streamlit
 scikit-learn
 rdkit
+rdkit-pypi
 chardet
 rdMolDraw2D
