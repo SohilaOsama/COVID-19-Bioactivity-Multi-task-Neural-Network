@@ -7,3 +7,4 @@ streamlit
 scikit-learn
 rdkit
 chardet
+rdMolDraw2D
