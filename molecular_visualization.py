@@ -24,13 +24,13 @@ def show_molecular_visualization():
                         rdMolDraw2D.PrepareAndDrawMolecule(drawer, mol)
                         drawer.FinishDrawing()
                         svg = drawer.GetDrawingText().replace('\n', '')
+                        st.image(svg, use_column_width=True)
                     elif style == "sphere":
-                        svg = Draw.MolToImage(mol, size=(300, 300), kekulize=True, wedgeBonds=True, fitImage=True, options=Draw.DrawingOptions())
+                        img = Draw.MolToImage(mol, size=(300, 300), kekulize=True, wedgeBonds=True, fitImage=True, options=Draw.DrawingOptions())
+                        st.image(img)
                     elif style == "line":
-                        svg = Draw.MolToImage(mol, size=(300, 300), kekulize=False, options=Draw.DrawingOptions())
-                    
-                    # Display the molecular image
-                    st.image(svg, use_column_width=True)
+                        img = Draw.MolToImage(mol, size=(300, 300), kekulize=False, options=Draw.DrawingOptions())
+                        st.image(img)
                 else:
                     st.error(f"Invalid SMILES string: {smiles}")
         else:
