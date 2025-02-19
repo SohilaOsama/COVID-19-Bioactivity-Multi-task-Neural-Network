@@ -12,6 +12,7 @@ import hashlib  # For generating fixed confidence and error
 from about import show_about
 from readme import show_readme
 from mission import show_mission
+from molecular_visualization import show_molecular_visualization  # Import the new feature
 
 # Load models and preprocessing steps
 nn_model = TFSMLayer('multi_tasking_model_converted', call_endpoint='serving_default')
@@ -134,14 +135,14 @@ with open("script.js") as f:
 # Navigation
 st.sidebar.markdown("## Navigation")
 nav_home = st.sidebar.button("Home")
-# nav_about = st.sidebar.button("About")
+nav_molecular_visualization = st.sidebar.button("3D Molecular Visualization")  # Add new navigation button
 nav_mission = st.sidebar.button("Mission")
 nav_readme = st.sidebar.button("README")
 
 if nav_home:
     st.session_state.page = "Home"
-# elif nav_about:
-#     st.session_state.page = "About"
+elif nav_molecular_visualization:
+    st.session_state.page = "3D Molecular Visualization"  # Set session state for new feature
 elif nav_mission:
     st.session_state.page = "Mission"
 elif nav_readme:
@@ -262,6 +263,9 @@ if st.session_state.page == "Home":
 
             except Exception as e:
                 st.error(f"Error processing the uploaded file: {e}")
+
+elif st.session_state.page == "3D Molecular Visualization":
+    show_molecular_visualization()  # Call the function to show the new feature
 
 elif st.session_state.page == "Mission":
     show_mission()
