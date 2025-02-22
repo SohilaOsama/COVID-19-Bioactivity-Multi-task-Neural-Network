@@ -1,0 +1,93 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(to right, #e0f7fa, #e1f5fe);
+    color: #333;
+}
+
+.sidebar .sidebar-content {
+    background: linear-gradient(135deg, #0288d1, #26c6da);
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.sidebar .sidebar-content button {
+    background-color: #03a9f4;
+    color: white;
+    border: none;
+    padding: 14px;
+    margin: 10px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.sidebar .sidebar-content button:hover {
+    background-color: #0288d1;
+}
+
+.main .main-content {
+    background-color: #ffffff;
+    padding: 35px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.result-container {
+    border: 3px solid #03a9f4;
+    padding: 25px;
+    border-radius: 15px;
+    background: linear-gradient(135deg, #e0f7fa, #e1f5fe);
+    color: #333;
+    margin-top: 25px;
+}
+
+.result-container h4 {
+    color: #0288d1;
+    text-align: center;
+    font-size: 1.7em;
+    margin-bottom: 18px;
+}
+
+.result-value {
+    color: #03a9f4;
+    font-weight: bold;
+}
+
+.result-container span[style*="color: #D32F2F;"] {
+    color: #d32f2f !important;
+}
+
+.home-header {
+    text-align: center;
+    font-size: 2.5em;
+    font-weight: 800;
+    margin-bottom: 25px;
+    color: #01579b;
+}
+
+.home-image {
+    display: block;
+    margin: 25px auto;
+    max-width: 85%;
+    border-radius: 20px;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+.instructions {
+    background-color: #f0f4f8;
+    padding: 25px;
+    border-radius: 12px;
+    margin: 25px 0;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+
+.instructions h2 {
+    color: #01579b;
+    margin-bottom: 18px;
+}
+
+.instructions p, .instructions li {
+    font-size: 1.15em;
+    margin-bottom: 12px;
+}
